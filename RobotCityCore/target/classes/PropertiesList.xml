@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <simulated>
+        <type>
+            <name>Name</name>
+        </type>
+        <type>
+            <name>Startpoint</name>
+        </type>
+        <type>
+            <name>Speed</name>
+        </type>
+    </simulated>
+</types>

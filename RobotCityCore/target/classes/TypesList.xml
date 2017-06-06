@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+    <simulated>
+        <type>
+            <name>Car</name>
+        </type>
+        <type>
+            <name>Drone</name>
+        </type>
+        <type>
+            <name>F1</name>
+        </type>
+    </simulated>
+</types>
