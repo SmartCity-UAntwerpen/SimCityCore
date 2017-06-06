@@ -1,12 +1,10 @@
 package be.uantwerpen.rc.configurations;
 
-import be.uantwerpen.rc.models.sim.SimDeployerService;
+import be.uantwerpen.rc.services.SimDeployerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.IOException;
 
 /**
  * Created by Thomas on 25/02/2016.

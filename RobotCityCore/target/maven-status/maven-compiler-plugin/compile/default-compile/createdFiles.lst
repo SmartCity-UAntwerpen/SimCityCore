@@ -8,10 +8,10 @@ be\uantwerpen\rc\models\sim\deployer\TCPListener.class
 be\uantwerpen\rc\SimCityApplication.class
 be\uantwerpen\rc\configurations\SystemLoader.class
 be\uantwerpen\rc\configurations\SystemPropertyActiveProfileResolver.class
+be\uantwerpen\rc\services\SimDeployerService.class
 be\uantwerpen\rc\tools\smartcar\models\map\Point.class
 be\uantwerpen\rc\models\sim\SimCore$1.class
 be\uantwerpen\rc\tools\smartcar\handlers\EventHandler.class
-be\uantwerpen\rc\models\sim\SimDeployer.class
 be\uantwerpen\rc\models\sim\deployer\TCPUtils.class
 be\uantwerpen\rc\tools\smartcar\handlers\TagReaderHandler.class
 be\uantwerpen\rc\tools\PropertiesList.class
