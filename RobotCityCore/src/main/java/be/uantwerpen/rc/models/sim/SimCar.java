@@ -77,6 +77,8 @@ public class SimCar extends SimVehicle
         coreArguments.add("-Dcar.ccore.eventport=" + this.eventSocketService.getListeningPort());
         //Select random free port
         coreArguments.add("-Dserver.port=0");
+        coreArguments.add("-Dsc.core.ip=143.129.39.151");
+        coreArguments.add("-Dsc.core.port=1994");
 
         if(this.carCore == null)
         {
