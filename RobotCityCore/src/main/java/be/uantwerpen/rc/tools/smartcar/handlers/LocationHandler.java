@@ -345,7 +345,7 @@ public class LocationHandler
         ResponseEntity<Map> responseMap;
         Map map;
 
-        responseMap = template.getForEntity("http://" + serverIP + ":" + serverPort + "/map/", Map.class);
+        responseMap = template.getForEntity("http://143.129.39.151:1994/map/", Map.class);
         map = responseMap.getBody();
 
         return map;

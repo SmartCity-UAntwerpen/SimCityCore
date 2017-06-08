@@ -1,7 +1,5 @@
 package be.uantwerpen.rc.models.sim;
 
-import org.springframework.beans.factory.annotation.Value;
-
 /**
  * Created by Thomas on 03/04/2016.
  */
@@ -21,7 +19,7 @@ public abstract class SimBot implements Runnable
         this.running = false;
         this.type = "bot";
         this.serverCoreIP = "localhost";
-        this.serverCorePort = 0;
+        this.serverCorePort = 1994;
 
         this.name = "SimBot";
     }
@@ -37,11 +35,6 @@ public abstract class SimBot implements Runnable
     {
         this.serverCoreIP = serverIP;
         this.serverCorePort = serverPort;
-    }
-
-    public boolean create()
-    {
-        return true;
     }
 
     public boolean start()
@@ -67,7 +60,8 @@ public abstract class SimBot implements Runnable
     public boolean restart()
     {
         if(simulationThread != null) {
-            if (this.running) {
+            if (this.running)
+            {
                 this.running = false;
             }
 
