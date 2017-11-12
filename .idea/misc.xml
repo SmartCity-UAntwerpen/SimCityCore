@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/RobotCityCore/pom.xml" />
         <option value="$PROJECT_DIR$/SmartCity Common/pom.xml" />
+        <option value="$PROJECT_DIR$/SimCityCore/pom.xml" />
       </list>
     </option>
   </component>
