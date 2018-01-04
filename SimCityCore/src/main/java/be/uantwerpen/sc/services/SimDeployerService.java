@@ -19,12 +19,8 @@ import java.util.logging.Level;
  */
 @Service
 public class SimDeployerService implements TCPListener {
-    @Value("${sc.core.ip}")
-    private String scIP;
-    @Value("#{new Integer(${sc.core.port})}")
-    private int scPort;
-    @Value("#{new Integer(${serverPort})}")
-    private int serverPort;
+    @Value("#{new Integer(${simPort})}")
+    private int simPort;
     private static Log log;
     private Level level = Level.CONFIG;
 
@@ -41,7 +37,7 @@ public class SimDeployerService implements TCPListener {
     public void start() {
         log = new Log(this.getClass(), level);
         try {
-            tcpUtils = new TCPUtils(serverPort, this,true);
+            tcpUtils = new TCPUtils(simPort, this,true);
         } catch (IOException e) {
             e.printStackTrace();
             Log.logSevere("SIMDEPLOYER", "SimDeployer could not be started. TCP IO-exception.");
@@ -102,7 +98,6 @@ public class SimDeployerService implements TCPListener {
     private boolean createVehicle(long simulationID){
         if (!simulatedVehicles.containsKey(simulationID)) {
             SimCar newCar = new SimCar();
-            newCar.setServerCoreAddress(scIP, scPort);
             simulatedVehicles.put(simulationID, newCar);
             Log.logInfo("SIMDEPLOYER", "New simulated vehicle registered with simulation ID " + simulationID + ".");
             return true;

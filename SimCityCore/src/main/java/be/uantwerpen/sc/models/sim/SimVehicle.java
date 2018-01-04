@@ -2,8 +2,8 @@ package be.uantwerpen.sc.models.sim;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * SimVehicle subclass for SimBot
  */
-// SimVehicle subclass for SimBot
 public abstract class SimVehicle extends SimBot
 {
     protected int startPoint;

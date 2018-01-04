@@ -2,8 +2,9 @@ package be.uantwerpen.sc.models;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * Job class
+ * TODO used?
  */
-// Job class
 public class Job {
 
     private int jobId;

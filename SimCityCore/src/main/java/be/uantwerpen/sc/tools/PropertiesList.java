@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Service for supported bot properties
+/**
+ * Service for supported bot properties
+ */
 @Service
 public class PropertiesList
 {

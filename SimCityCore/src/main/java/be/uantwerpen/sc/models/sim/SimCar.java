@@ -10,8 +10,9 @@ import java.util.List;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * Class for simulated robots
  */
-// Class for simulated robots
+//
 public class SimCar extends SimVehicle
 {
     private SimCore carCore;
@@ -79,8 +80,8 @@ public class SimCar extends SimVehicle
         coreArguments.add("-Dserver.port=0");
         coreArguments.add("-Dsc.core.ip=143.129.39.151");
         coreArguments.add("-Dsc.core.port=1994");
-        coreArguments.add("-Dsc.core.ip="+ this.serverCoreIP);
-        coreArguments.add("-Dsc.core.port=" + String.valueOf(this.serverCorePort));
+        coreArguments.add("-Dsc.core.ip="+ this.robotBackendIP);
+        coreArguments.add("-Dsc.core.port=" + String.valueOf(this.robotBackendPort));
 
         if(this.carCore == null)
         {
@@ -116,7 +117,7 @@ public class SimCar extends SimVehicle
 
     private void simulateCar()
     {
-        SmartCar carSimulation = new SmartCar(this.name, this.simSpeed, this.serverCoreIP, this.serverCorePort);
+        SmartCar carSimulation = new SmartCar(this.name, this.simSpeed);
 
         long lastSimulationTime = System.currentTimeMillis();
 

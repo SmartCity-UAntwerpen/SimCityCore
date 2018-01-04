@@ -10,8 +10,8 @@ import java.util.List;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * Core simulation
  */
-// Core simulation
 public class SimCore
 {
     private String coreLocation;

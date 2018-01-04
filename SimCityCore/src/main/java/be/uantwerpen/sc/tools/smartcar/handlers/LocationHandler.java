@@ -3,6 +3,7 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
 import be.uantwerpen.sc.tools.smartcar.models.map.Link;
 import be.uantwerpen.sc.tools.smartcar.models.map.Map;
 import be.uantwerpen.sc.tools.smartcar.models.map.Node;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,6 +12,7 @@ import java.util.Iterator;
 
 /**
  * Created by Thomas on 28/05/2016.
+ * Handles bot location
  */
 public class LocationHandler
 {
@@ -24,8 +26,16 @@ public class LocationHandler
     private Direction destinationDirection;
     private boolean followLine;
 
-    private String serverIP;
-    private int serverPort;
+    /**
+     * Backend IP
+     */
+    @Value("${robotBackend.ip:default}")
+    String robotBackendIP;
+    /**
+     * Backend Port
+     */
+    @Value("#{new Integer(${robotBackend.port})}")
+    int robotBackendPort;
 
     public enum Direction
     {
@@ -47,50 +57,37 @@ public class LocationHandler
         this.destinationDirection = Direction.NORTH;
         this.followLine = false;
 
-        this.serverIP = "localhost";
-        this.serverPort = 1994;
     }
 
-    public LocationHandler(String serverIP, int serverPort)
-    {
-        this();
-
-        this.serverIP = serverIP;
-        this.serverPort = serverPort;
-    }
-
+    /**
+     * Gets map and fills position and directions
+     * @param startPosition ID of start node
+     * @return Success
+     */
     public boolean initLocationHandler(int startPosition)
     {
-        try
-        {
+        try {
             this.map = this.getMap();
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             System.err.println("Could not connect to SmartCity Core for map!");
             e.printStackTrace();
-
             return false;
         }
 
-        if(this.map == null)
-        {
+        if(this.map == null) {
             System.err.println("Could not retrieve map from SmartCity Core!");
-
             return false;
         }
 
-        //Find node if existing
+        //Find start node if existing
         boolean found = false;
         Iterator<Node> it = this.map.getNodeList().iterator();
         Node startNode = null;
 
-        while(it.hasNext() && ! found)
-        {
+        while(it.hasNext() && ! found) {
             Node node = it.next();
-
-            if(node.getNodeId() == startPosition)
-            {
+            if(node.getNodeId() == startPosition) {
                 startNode = node;
                 found = true;
             }
@@ -100,20 +97,17 @@ public class LocationHandler
         if(found && startNode.getNeighbours().size() > 0)
         {
             //Determine destination location (bot starts on edge point)
-            try
-            {
+            try {
                 this.currentDirection = parseDirection(startNode.getNeighbours().get(0).getStartDirection());
 
                 //Destination location (look direction) is opposite of absolute drive in direction
                 int lookDirection = (parseDirection(startNode.getNeighbours().get(0).getStopDirection()).ordinal() + 2) % 4;
                 this.destinationDirection = Direction.values()[lookDirection];
             }
-            catch(ParseException e)
-            {
+            catch(ParseException e) {
                 //Unknown direction
                 System.err.println("Could not find start position for id " + startPosition + "!");
                 System.err.println(e.getMessage());
-
                 return false;
             }
 
@@ -123,8 +117,7 @@ public class LocationHandler
 
             this.currentLocation = startPosition;
         }
-        else
-        {
+        else {
             System.err.println("Could not find start position for id " + startPosition + "!");
             return false;
         }
@@ -144,63 +137,66 @@ public class LocationHandler
         return this.onMap;
     }
 
+    /**
+     * Checks if its on a node
+     * @return
+     */
     public boolean onNode()
     {
-        if(this.onMap)
-        {
+        if(this.onMap) {
             if(travelledDistance == 0 || (travelledDistance <= destinationDistance + 10 && travelledDistance >= destinationDistance - 10))
-            {
                 return true;
-            }
             else
-            {
                 return false;
-            }
         }
         else
-        {
             return false;
-        }
     }
 
+    /**
+     * Gets distance from location
+     * @return
+     */
     public int getDistanceTargetLocation()
     {
         return (int)this.destinationDistance;
     }
 
+    /**
+     * Gets robot current location
+     * @return
+     */
     public int getCurrentLocation()
     {
         return this.currentLocation;
     }
 
+    /**
+     * Gets RFID of given node
+     * @param nodeID Id of node
+     * @return RFID
+     */
     public String getNodeRFID(int nodeID)
     {
         if(map == null)
-        {
-            //No map loaded
-            return null;
-        }
+            return null; //No map loaded
 
         for(Node node : this.map.getNodeList())
         {
             if(node.getNodeId() == nodeID)
-            {
                 return node.getPointEntity().getRfid();
-            }
         }
-
         return null;
     }
 
+    /**
+     * Starts bot following a simulated line
+     */
     public void startFollowLine()
     {
         Node currentNode = null;
-
         if(map == null)
-        {
-            //No map loaded
-            return;
-        }
+            return; //No map loaded
 
         boolean foundNode = false;
         Iterator<Node> itNode = this.map.getNodeList().iterator();
@@ -208,12 +204,9 @@ public class LocationHandler
         while(itNode.hasNext() && !foundNode)
         {
             Node node = itNode.next();
-
             if(node.getNodeId() == this.currentLocation)
             {
-                //Get current node
                 currentNode = node;
-
                 foundNode = true;
             }
         }
@@ -224,39 +217,31 @@ public class LocationHandler
             Iterator<Link> itLink = currentNode.getNeighbours().iterator();
             Link followLink = null;
 
-            while(itLink.hasNext() && !foundLink)
-            {
+            while(itLink.hasNext() && !foundLink) {
+
                 Link link = itLink.next();
-
-                try
-                {
+                try {
                     Direction direction = parseDirection(link.getStartDirection());
-
                     if(direction == this.currentDirection)
                     {
                         followLink = link;
-
                         foundLink = true;
                     }
                 }
-                catch(ParseException e)
-                {
+                catch(ParseException e) {
                     //Could not parse direction
                     System.err.println("Could not parse start direction of link with id " + link.getId());
                     System.err.println(e.getMessage());
                 }
             }
 
-            if(foundLink)
-            {
-                try
-                {
+            if(foundLink) {
+                try {
                     //Destination location (look direction) is opposite of absolute drive in direction
                     int lookDirection = (parseDirection(followLink.getStopDirection()).ordinal() + 2) % 4;
                     this.destinationDirection = Direction.values()[lookDirection];
                 }
-                catch(ParseException e)
-                {
+                catch(ParseException e) {
                     //Could not parse direction
                     System.err.println("Could not parse end direction of link with id " + followLink.getId());
                     System.err.println(e.getMessage());
@@ -270,27 +255,21 @@ public class LocationHandler
                 this.followLine = true;
             }
             else
-            {
-                //Could not find destination, going off road
-                this.onMap = false;
-            }
+                this.onMap = false; //Could not find destination, going off road
         }
         else
-        {
-            //Could not find node
-            this.onMap = false;
-        }
+            this.onMap = false; //Could not find node
 
         return;
     }
 
+    /**
+     * Ends line following, arrived at destination
+     */
     public void endFollowLine()
     {
         if(map == null)
-        {
-            //No map loaded
-            return;
-        }
+            return;//No map loaded
 
         if(followLine)
         {
@@ -305,15 +284,20 @@ public class LocationHandler
         this.currentDirection = this.getNewDirection((int)angle);
     }
 
+    /**
+     * Converts input string to direction
+     * @param direction Direction as string
+     * @return Out direction
+     * @throws ParseException Direction not found
+     */
     private Direction parseDirection(String direction) throws ParseException
     {
-        switch(direction)
-        {
+        switch(direction) {
             case "N":
                 return Direction.NORTH;
             case "E":
                 return Direction.EAST;
-            case "S":
+            case "Z":
                 return Direction.SOUTH;
             case "W":
                 return Direction.WEST;
@@ -322,30 +306,36 @@ public class LocationHandler
         }
     }
 
-    private Direction getNewDirection(int turnAngle)
-    {
+    /**
+     * Transforms angle to Direction in reference to the current direction
+     * @param turnAngle Angle to turn
+     * @return Direction found
+     */
+    private Direction getNewDirection(int turnAngle) {
         //Positive angle == turn left, Negative angle = turn right
         int numberOfQuartTurns = -Math.round(turnAngle / 90) % 4;
 
         //Relative to North == 0
         int newRelativeDirection = (this.currentDirection.ordinal() + numberOfQuartTurns) % 4;
 
-        if(newRelativeDirection < 0)
-        {
+        if(newRelativeDirection < 0) {
             //Convert negative value to positive counterpart
             newRelativeDirection = newRelativeDirection + 4;
         }
-
         return Direction.values()[newRelativeDirection];
     }
 
+    /**
+     * Gets map from Robot Backend
+     * @return received map
+     */
     private Map getMap()
     {
         RestTemplate template = new RestTemplate();
         ResponseEntity<Map> responseMap;
         Map map;
 
-        responseMap = template.getForEntity("http://" + this.serverIP + ":" + String.valueOf(this.serverPort) + "/map/", Map.class);
+        responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
         map = responseMap.getBody();
 
         return map;

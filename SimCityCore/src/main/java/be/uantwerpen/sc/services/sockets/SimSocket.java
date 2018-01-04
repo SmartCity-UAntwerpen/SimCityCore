@@ -7,8 +7,8 @@ import java.net.SocketTimeoutException;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * Class for managing socket communications to vehicle cores
  */
-// Class for managing socket communications to vehicle cores
 public class SimSocket
 {
     private Socket socket;
@@ -61,20 +61,13 @@ public class SimSocket
         String message = null;
 
         if(this.socket.isClosed())
-        {
-            //Socket is closed
             return null;
-        }
 
-        try
-        {
+        try {
             openReader();
         }
-        catch(IOException e)
-        {
-            //Could not open input stream
+        catch(IOException e) {
             System.err.println("Could not open input stream!");
-
             return null;
         }
 
@@ -85,19 +78,13 @@ public class SimSocket
                 message = this.reader.readLine();
 
                 if(message == null)
-                {
-                    //Socket is closed by the client
-                    this.close();
-                }
+                    this.close(); //Socket is closed by the client
             }
-            catch(SocketTimeoutException e)
-            {
+            catch(SocketTimeoutException e) {
                 //Socket timed-out
             }
         }
-        catch(IOException e)
-        {
-            //Could not read input stream
+        catch(IOException e) {
             System.err.println("Could not read input stream!");
         }
 
@@ -109,51 +96,37 @@ public class SimSocket
         boolean success = true;
 
         if(this.socket.isClosed())
-        {
-            //Socket is closed
             return false;
-        }
 
-        try
-        {
+        try {
             openWriter();
         }
-        catch(IOException e)
-        {
-            //Could not open output stream
+        catch(IOException e) {
             System.err.println("Could not open output stream!");
-
             return false;
         }
 
-        try
-        {
+        try {
             this.writer.write(message);
             this.writer.flush();
         }
-        catch(IOException e)
-        {
-            //Could not write to output stream
+        catch(IOException e) {
             System.err.println("Could not write to output stream!");
-
             success = false;
         }
-
         return success;
     }
 
     private void openReader() throws IOException
     {
-        if(this.reader == null && this.socket != null)
-        {
+        if(this.reader == null && this.socket != null) {
             reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         }
     }
 
     private void openWriter() throws IOException
     {
-        if(this.writer == null && this.socket != null)
-        {
+        if(this.writer == null && this.socket != null) {
             writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
         }
     }

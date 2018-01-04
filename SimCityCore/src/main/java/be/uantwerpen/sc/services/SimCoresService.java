@@ -15,8 +15,8 @@ import java.io.File;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * SimCoreService responsible for loading JAR file
  */
-// SimCoreService responsible for loading JAR file
 @Service
 public class SimCoresService
 {

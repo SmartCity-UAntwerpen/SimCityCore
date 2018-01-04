@@ -1,59 +1,66 @@
 package be.uantwerpen.sc.models.sim;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * Created by Thomas on 03/04/2016.
+ * Abstract class for each simulated bot
  */
-// Abstract class for each simulated bot
 public abstract class SimBot implements Runnable
 {
     private Thread simulationThread;
     protected boolean running;
+
+    /**
+     * Bot ID
+     */
     protected int id;
+
+    /**
+     * Bot Type
+     */
     protected String type;
+
+    /**
+     * Bot Name
+     */
     protected String name;
-    protected String serverCoreIP;
-    protected int serverCorePort;
+
+    /**
+     * Backend IP
+     */
+    @Value("${robotBackend.ip:default}")
+    String robotBackendIP;
+    /**
+     * Servercore Port
+     */
+    @Value("#{new Integer(${robotBackend.port})}")
+    int robotBackendPort;
 
     protected SimBot()
     {
         this.running = false;
         this.type = "bot";
-        this.serverCoreIP = "localhost";
-        this.serverCorePort = 1994;
-
         this.name = "SimBot";
     }
 
     public SimBot(String name)
     {
         this();
-
         this.name = name;
-    }
-
-    public void setServerCoreAddress(String serverIP, int serverPort)
-    {
-        this.serverCoreIP = serverIP;
-        this.serverCorePort = serverPort;
     }
 
     public boolean start()
     {
         if(this.running)
-        {
             return false;
-        }
 
         this.simulationThread = new Thread(this);
-
         this.simulationThread.start();
-
         this.running = true;
 
         if(this.getStartPoint() == -1)
-        {
             return false;
-        }
         return true;
     }
 
@@ -61,13 +68,9 @@ public abstract class SimBot implements Runnable
     {
         if(simulationThread != null) {
             if (this.running)
-            {
                 this.running = false;
-            }
 
-            while (simulationThread.isAlive()) {
-                //Wait for thread to stop
-            }
+            while (simulationThread.isAlive()); //Wait for thread to stop
         }
         return this.start();
     }
@@ -75,12 +78,9 @@ public abstract class SimBot implements Runnable
     public boolean stop()
     {
         if(!this.running || this.simulationThread == null)
-        {
             return false;
-        }
 
-        if(this.running)
-        {
+        if(this.running) {
             this.running = false;
             return true;
         }
@@ -89,8 +89,7 @@ public abstract class SimBot implements Runnable
 
     public boolean remove()
     {
-        if(this.running)
-        {
+        if(this.running) {
             this.running = false;
         }
         return true;
@@ -99,12 +98,9 @@ public abstract class SimBot implements Runnable
     public boolean interrupt()
     {
         if(this.simulationThread == null)
-        {
             return false;
-        }
 
-        if(this.simulationThread.isAlive())
-        {
+        if(this.simulationThread.isAlive()) {
             this.simulationThread.interrupt();
             this.running = false;
         }

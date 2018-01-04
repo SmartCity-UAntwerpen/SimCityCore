@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Created by Thomas on 5/05/2017.
+ * Threadable class
  */
 @Service
 public class SimSocketService implements Runnable
@@ -29,29 +30,24 @@ public class SimSocketService implements Runnable
     public SimSocketService(int listeningPort)
     {
         if(listeningPort >= 0)
-        {
             this.socketPort = listeningPort;
-        }
         else
-        {
-            //Invalid listening port given
-            this.socketPort = 0;
-        }
+            this.socketPort = 0;   //Invalid listening port given
 
         this.sockets = new ArrayList<SimSocket>();
         this.serverSocket = null;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getListeningPort()
     {
         if(serverSocket != null)
-        {
             return this.serverSocket.getLocalPort();
-        }
         else
-        {
             return this.socketPort;
-        }
     }
 
     synchronized public SimSocket getConnection()
@@ -67,10 +63,7 @@ public class SimSocketService implements Runnable
                 return socket;
             }
             else
-            {
-                //No waiting connection
-                return null;
-            }
+                return null;//No waiting connection
         }
     }
 
@@ -80,49 +73,38 @@ public class SimSocketService implements Runnable
         Socket socket = null;
         SimSocket simSocket = null;
 
-        try
-        {
+        try {
             this.serverSocket = new ServerSocket(socketPort);
             this.serverSocket.setSoTimeout(500);
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             System.err.println("Could not open port: " + this.socketPort + " for simulator!");
-
             return;
         }
 
         while(!Thread.currentThread().isInterrupted())
         {
-            try
-            {
+            try {
                 socket = this.serverSocket.accept();
                 socket.setSoTimeout(1);
             }
-            catch(SocketTimeoutException timeEx)
-            {
+            catch(SocketTimeoutException timeEx) {
                 //Ignore exception to allow interrupting thread
                 continue;
             }
-            catch(Exception e)
-            {
+            catch(Exception e) {
                 System.err.println("Error, could not accept new connection!");
                 e.printStackTrace();
-
                 System.err.println("Socket service for port: " + this.socketPort + " will terminate!");
                 System.err.println("Please restart the simulation.");
-
                 break;
             }
 
             if(socket != null)
-            {
                 simSocket = new SimSocket(socket);
-            }
 
             //Add socket to waiting list
-            synchronized(this.sockets)
-            {
+            synchronized(this.sockets) {
                 this.sockets.add(simSocket);
             }
 
@@ -135,27 +117,20 @@ public class SimSocketService implements Runnable
         {
             for(SimSocket waitingSocket : this.sockets)
             {
-                try
-                {
+                try {
                     waitingSocket.close();
                 }
-                catch(IOException e)
-                {
+                catch(IOException e) {
                     System.err.println("Could not close waiting connection!");
                 }
             }
-
             this.sockets.clear();
         }
 
-        try
-        {
-            //Close server socket
+        try {
             this.serverSocket.close();
         }
-        catch(IOException e)
-        {
-            //Could not close server socket
+        catch(IOException e) {
             System.err.println("Could not close server on port: " + socketPort + "!");
         }
 

@@ -5,6 +5,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+/**
+ * TODO
+ */
 public class TCPUtils extends Thread {
     private ServerSocket serverSocket;
     private Socket socket;

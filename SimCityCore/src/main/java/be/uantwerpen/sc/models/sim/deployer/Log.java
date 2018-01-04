@@ -4,6 +4,9 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
+/**
+ * Logger class
+ */
 public class Log {
 
     private static java.util.logging.Logger logging = null;
