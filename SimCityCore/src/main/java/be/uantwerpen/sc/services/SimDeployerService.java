@@ -15,17 +15,37 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 /**
- * Created by Thomas on 3/06/2017.
+ * @author Thomas on 3/06/2017.
+ * @comments Reinout on 13/01/2018
+ * Converts incoming TCP packets into commands for the vehicle
  */
 @Service
 public class SimDeployerService implements TCPListener {
+
+    /**
+     * Port on which the simulation will accept TODO requests
+     */
     @Value("#{new Integer(${simPort})}")
     private int simPort;
+
+    /**
+     * Logger used for logging info, warnings etc
+     */
     private static Log log;
+
+    /**
+     * Logging level
+     */
     private Level level = Level.CONFIG;
 
+    /**
+     * TODO
+     */
     private TCPUtils tcpUtils;
 
+    /**
+     * Map of all the simulated vehicles and their simulation identifiers
+     */
     private static HashMap<Long, SimBot> simulatedVehicles = new HashMap<>();
 
     @Autowired
@@ -34,6 +54,9 @@ public class SimDeployerService implements TCPListener {
     public SimDeployerService() throws IOException {
     }
 
+    /**
+     * Start sequence, attempts to start TCPUtils and thus tries to open sockets
+     */
     public void start() {
         log = new Log(this.getClass(), level);
         try {
@@ -46,6 +69,12 @@ public class SimDeployerService implements TCPListener {
         Log.logInfo("SIMDEPLOYER", "SimDeployer has been started.");
     }
 
+    /**
+     * Parses incoming TCP message into the corresponding vehicle command
+     * @param message Message received
+     * @return "ACK" or "NACK", to be parsed by the other server
+     * @throws IOException
+     */
     @Override
     public String parseTCP(String message) throws IOException {
         boolean result = false;
@@ -74,6 +103,13 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to update a given property of a vehicle
+     * @param simulationID ID of vehicle
+     * @param parameter Property to update
+     * @param argument Value to give to property
+     * @return success
+     */
     private boolean setVehicle(long simulationID, String parameter, String argument) {
         if (simulatedVehicles.containsKey(simulationID)) {
             try {
@@ -95,6 +131,11 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to create & add a vehicle with given simulation ID
+     * @param simulationID ID of the vehicle
+     * @return Success
+     */
     private boolean createVehicle(long simulationID){
         if (!simulatedVehicles.containsKey(simulationID)) {
             SimCar newCar = new SimCar();
@@ -107,6 +148,11 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to stop a vehicle with given simulation ID
+     * @param simulationID ID of the vehicle
+     * @return Success
+     */
     private boolean stopVehicle(long simulationID) {
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).stop()) {
@@ -123,6 +169,12 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to kill a vehicle with given simulation ID
+     * This also removes it from the list of vehicles
+     * @param simulationID ID of vehicle
+     * @return success or not
+     */
     private boolean killVehicle(long simulationID) {
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).remove()) {
@@ -138,6 +190,11 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to restart a vehicle with given simulation ID
+     * @param simulationID ID of vehicle
+     * @return Success
+     */
     private boolean restartVehicle(long simulationID){
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).restart()) {
@@ -153,6 +210,11 @@ public class SimDeployerService implements TCPListener {
         }
     }
 
+    /**
+     * Attempts to start a vehicle with given simulation ID
+     * @param simulationID ID of the vehicle to start
+     * @return Success
+     */
     private boolean startupVehicle(long simulationID){
         if (simulatedVehicles.containsKey(simulationID)) {
             if(simulatedVehicles.get(simulationID).getStartPoint() != -1) {

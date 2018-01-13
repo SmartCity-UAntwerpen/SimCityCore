@@ -7,7 +7,6 @@ import be.uantwerpen.sc.services.sockets.SimSocket;
  */
 public class TaskHandler
 {
-    //pushPls
     private DriveHandler driveHandler;
     private EventHandler eventHandler;
     private LocationHandler locationHandler;
@@ -29,21 +28,21 @@ public class TaskHandler
         this.tagReaderHandler = tagReaderHandler;
     }
 
+    /**
+     * Processes message received from the socket into a valid command
+     * @param socket Socket to receive message on
+     */
     public void processMessage(SimSocket socket)
     {
         String message = socket.getMessage();
         String response = "NACK";
 
-        if(message == null)
-        {
-            //No task to process
-            return;
+        if(message == null) {
+            return; //No task to process
         }
 
-        if(message.length() <= 0)
-        {
-            //Empty message
-            return;
+        if(message.length() <= 0) {
+            return; //Empty message
         }
 
         String task = message.split(" ")[0].trim();
@@ -85,6 +84,11 @@ public class TaskHandler
         socket.sendMessage(response + "\r\n# ");
     }
 
+    /**
+     * Processes given drive command
+     * @param command Command to parse
+     * @return "ACK" on success or "NACK" on failure
+     */
     private String processDriveCommand(String command)
     {
         String response = "NACK";
@@ -104,26 +108,19 @@ public class TaskHandler
             {
                 //Follow line until end of line
                 locationHandler.startFollowLine();
-
                 int distance = locationHandler.getDistanceTargetLocation();
-
                 driveHandler.newDriveDistanceCommand(distance);
-
                 return "ACK";
             }
             else
             {
                 //Follow line for distance
-                try
-                {
+                try {
                     int distance = parseInteger(command.split(" ", 3)[2]);
-
                     driveHandler.newDriveDistanceCommand(distance);
-
                     response = "ACK";
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                     //Could not parse distance from command
                     response = "MALFORMED COMMAND";
                 }
@@ -143,32 +140,24 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE FORWARD"))
         {
-            try
-            {
+            try {
                 int distance = parseInteger(command.split(" ", 3)[2]);
-
                 driveHandler.newDriveDistanceCommand(distance);
-
                 response = "ACK";
             }
-            catch(Exception e)
-            {
+            catch(Exception e) {
                 //Could not parse distance from command
                 response = "MALFORMED COMMAND";
             }
         }
         else if(command.startsWith("DRIVE BACKWARDS"))
         {
-            try
-            {
+            try {
                 int distance = parseInteger(command.split(" ", 3)[2]);
-
                 driveHandler.newDriveDistanceCommand(-distance);
-
                 response = "ACK";
             }
-            catch(Exception e)
-            {
+            catch(Exception e) {
                 //Could not parse distance from command
                 response = "MALFORMED COMMAND";
             }
@@ -189,8 +178,7 @@ public class TaskHandler
 
                     response = "ACK";
                 }
-                else
-                {
+                else {
                     response = "MALFORMED COMMAND";
                 }
             }
@@ -198,32 +186,24 @@ public class TaskHandler
             {
                 if(command.split(" ")[2].equals("L"))
                 {
-                    try
-                    {
+                    try {
                         int angle = parseInteger(command.split(" ")[3]);
-
                         driveHandler.newTurnAngleCommand(angle);
-
                         response = "ACK";
                     }
-                    catch(Exception e)
-                    {
+                    catch(Exception e) {
                         //Could not parse distance from command
                         response = "MALFORMED COMMAND";
                     }
                 }
                 else if(command.split(" ")[2].equals("R"))
                 {
-                    try
-                    {
+                    try {
                         int angle = parseInteger(command.split(" ")[3]);
-
                         driveHandler.newTurnAngleCommand(-angle);
-
                         response = "ACK";
                     }
-                    catch(Exception e)
-                    {
+                    catch(Exception e) {
                         //Could not parse distance from command
                         response = "MALFORMED COMMAND";
                     }
@@ -290,8 +270,7 @@ public class TaskHandler
 
             response = "ACK";
         }
-        else
-        {
+        else {
             response = "UNKNOWN COMMAND";
         }
 
@@ -312,24 +291,30 @@ public class TaskHandler
         }
     }
 
+    /**
+     * Returns help string containing commands
+     * @return String containingg available commands
+     */
     private String processHelpCommand()
     {
         return "KNOWN COMMANDS IN SIMULATION: DRIVE [ABORT, FLUSH, FOLLOWLINE, PAUSE, RESUME, FORWARD, BACKWARDS, TURN, ROTATE, DISTANCE], TAG [READ UID], HELP";
     }
 
+    /**
+     * Integer parsing with exception throwing
+     * @param value String to parse
+     * @return Integer value
+     * @throws Exception
+     */
     private int parseInteger(String value) throws Exception
     {
         int parsedInt;
-
-        try
-        {
+        try {
             parsedInt = Integer.parseInt(value);
         }
-        catch(NumberFormatException e)
-        {
+        catch(NumberFormatException e) {
             throw new Exception("'" + value + "' is not an integer value!");
         }
-
         return parsedInt;
     }
 }

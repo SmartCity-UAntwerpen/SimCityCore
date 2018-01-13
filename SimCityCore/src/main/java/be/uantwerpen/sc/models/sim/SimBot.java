@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * Created by Thomas on 03/04/2016.
  * Abstract class for each simulated bot
+ * Mainly used for threading
  */
 public abstract class SimBot implements Runnable
 {
@@ -29,13 +30,14 @@ public abstract class SimBot implements Runnable
     /**
      * Backend IP
      */
-    @Value("${robotBackend.ip:default}")
-    String robotBackendIP;
+    //@Value("${robotbackend.ip:default}")//TODO Currently doesnt work
+    String robotBackendIP="smartcity.ddns.net";
+
     /**
-     * Servercore Port
+     * Backend Port
      */
-    @Value("#{new Integer(${robotBackend.port})}")
-    int robotBackendPort;
+   // @Value("#{new Integer(${robotbackend.port})}")//TODO currently doesnt work
+    int robotBackendPort=8083;
 
     protected SimBot()
     {
@@ -50,6 +52,10 @@ public abstract class SimBot implements Runnable
         this.name = name;
     }
 
+    /**
+     * Starts bot
+     * @return Success
+     */
     public boolean start()
     {
         if(this.running)

@@ -2,7 +2,8 @@ package be.uantwerpen.sc.models.sim;
 
 /**
  * Created by Thomas on 5/05/2017.
- * SimVehicle subclass for SimBot
+ * SimVehicle subclass from SimBot
+ * Adds Startpoint & Sim speed
  */
 public abstract class SimVehicle extends SimBot
 {
@@ -12,9 +13,7 @@ public abstract class SimVehicle extends SimBot
     public SimVehicle(String name, int startPoint, long simSpeed)
     {
         super(name);
-
         this.type = "vehicle";
-
         this.startPoint = startPoint;
         this.simSpeed = simSpeed;
     }
@@ -42,36 +41,26 @@ public abstract class SimVehicle extends SimBot
     public boolean parseProperty(String property, String value) throws Exception
     {
         if(super.parseProperty(property, value))
-        {
-            return true;
-        }
+            return true;//Property already parsed
 
         switch(property.toLowerCase().trim())
         {
             case "speed":
-                try
-                {
-                    int speed = parseInteger(value);
-
+                try {
+                    int speed = Integer.parseInt(value);
                     this.setSimSpeed(speed);
-
                     return true;
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                     throw new Exception("Could not parse value for speed setting! " + e.getMessage());
                 }
             case "startpoint":
-                try
-                {
-                    int startPoint = parseInteger(value);
-
+                try {
+                    int startPoint = Integer.parseInt(value);
                     this.setStartPoint(startPoint);
-
                     return true;
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                     throw new Exception("Could not parse value for start point setting! " + e.getMessage());
                 }
             default:
@@ -83,9 +72,7 @@ public abstract class SimVehicle extends SimBot
     public boolean parseProperty(String property) throws Exception
     {
         if(super.parseProperty(property))
-        {
             return true;
-        }
 
         switch(property.toLowerCase().trim())
         {
@@ -98,29 +85,12 @@ public abstract class SimVehicle extends SimBot
         }
     }
 
-    private int parseInteger(String value) throws Exception
-    {
-        int parsedInt;
-
-        try
-        {
-            parsedInt = Integer.parseInt(value);
-        }
-        catch(NumberFormatException e)
-        {
-            throw new Exception("'" + value + "' is not an integer value!");
-        }
-
-        return parsedInt;
-    }
 
     @Override
     public boolean printProperty(String property)
     {
         if(super.printProperty(property))
-        {
             return true;
-        }
 
         switch(property.toLowerCase().trim())
         {

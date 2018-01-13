@@ -33,10 +33,7 @@ class LogFormatter extends Formatter {
     public String getHead(Handler h) {
         return super.getHead(h);
     }
-
     public String getTail(Handler h) {
         return super.getTail(h);
     }
-
-
 }

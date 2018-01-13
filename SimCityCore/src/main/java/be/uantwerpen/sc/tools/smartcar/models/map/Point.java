@@ -3,7 +3,6 @@ package be.uantwerpen.sc.tools.smartcar.models.map;
 /**
  * Created by Niels on 24/03/2016.
  */
-
 public class Point
 {
     private int pid;
@@ -64,10 +63,8 @@ public class Point
     public int hashCode()
     {
         int result = pid;
-
         result = 31 * result + (rfid != null ? rfid.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
-
         return result;
     }
 }

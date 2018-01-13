@@ -12,9 +12,9 @@ import java.util.List;
  * Created by Thomas on 5/05/2017.
  * Class for simulated robots
  */
-//
 public class SimCar extends SimVehicle
 {
+
     private SimCore carCore;
     private SimSocketService taskSocketService;
     private SimSocketService eventSocketService;
@@ -22,7 +22,6 @@ public class SimCar extends SimVehicle
     public SimCar()
     {
         super("bot", -1, 70);
-
         this.taskSocketService = new SimSocketService();
         this.eventSocketService = new SimSocketService();
         this.type = "car";
@@ -33,9 +32,7 @@ public class SimCar extends SimVehicle
     public boolean parseProperty(String property, String value) throws Exception
     {
         if(super.parseProperty(property, value))
-        {
             return true;
-        }
 
         switch(property.toLowerCase().trim())
         {
@@ -78,27 +75,20 @@ public class SimCar extends SimVehicle
         coreArguments.add("-Dcar.ccore.eventport=" + this.eventSocketService.getListeningPort());
         //Select random free port
         coreArguments.add("-Dserver.port=0");
-        coreArguments.add("-Dsc.core.ip=143.129.39.151");
-        coreArguments.add("-Dsc.core.port=1994");
+       //TODO Why both? coreArguments.add("-Dsc.core.ip=143.129.39.151");
+       //TODO Why both? coreArguments.add("-Dsc.core.port=1994");
         coreArguments.add("-Dsc.core.ip="+ this.robotBackendIP);
         coreArguments.add("-Dsc.core.port=" + String.valueOf(this.robotBackendPort));
 
         if(this.carCore == null)
-        {
             this.carCore = SimCoresService.getSimulationCore(this.type);
-        }
 
         if(this.carCore != null)
-        {
             this.carCore.start(coreArguments);
-        }
-        else
-        {
+        else {
             //No core available
             Log.logSevere("SIMCAR", "Could not run Core for Car simulation!");
-
             this.stop();
-
             return;
         }
 
@@ -122,11 +112,10 @@ public class SimCar extends SimVehicle
         long lastSimulationTime = System.currentTimeMillis();
 
         //Initialise simulation
-        if(!carSimulation.initSimulation(this.startPoint))
-        {
+        if(!carSimulation.initSimulation(this.startPoint)) {
+
             Log.logSevere("SIMCAR", "Could not initialise SmartCar simulation!");
             Log.logSevere("SIMCAR", "Simulation will abort...");
-
             this.running = false;
         }
 
@@ -145,30 +134,24 @@ public class SimCar extends SimVehicle
             //Update simulation
             carSimulation.updateSimulation(elapsedTime);
 
-            try
-            {
+            try {
                 //Sleep simulation for 10 ms (simulation resolution > 10 ms)
                 Thread.sleep(10);
             }
-            catch(Exception e)
-            {
+            catch(Exception e) {
                 //Thread is interrupted
             }
         }
 
         if(!carSimulation.stopSimulation())
-        {
             Log.logSevere("SIMCAR", "Simulation layer is not stopped properly!");
-        }
     }
 
     @Override
     public boolean printProperty(String property)
     {
         if(super.printProperty(property))
-        {
             return true;
-        }
 
         switch(property.toLowerCase().trim())
         {

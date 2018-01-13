@@ -14,16 +14,43 @@ import java.util.List;
  */
 public class SimCore
 {
+    /**
+     * Robot core jar location
+     */
     private String coreLocation;
+
+    /**
+     * SimCore version
+     */
     private String version;
+
+    /**
+     * Status of the simulation
+     */
     private SimStatus status;
+
+    /**
+     * Logging string
+     * TODO Why?
+     */
     private String log;
+
+    /**
+     * Core thread running
+     */
     private boolean running;
+
+    /**
+     * Arguments for the Robot Core (probably)
+     */
     private List<String> runArguments;
+
+    /**
+     * Thread running the core
+     */
     private Thread coreThread;
 
-    private SimCore()
-    {
+    private SimCore() {
         this.coreLocation = "";
         this.version = "0.0.0";
         this.status = SimStatus.OFF;
@@ -32,10 +59,8 @@ public class SimCore
         this.coreThread = null;
     }
 
-    public SimCore(String coreLocation, String version)
-    {
+    public SimCore(String coreLocation, String version) {
         this();
-
         this.coreLocation = coreLocation;
         this.version = version;
     }
@@ -45,10 +70,7 @@ public class SimCore
         return this.coreLocation;
     }
 
-    public String getVersion()
-    {
-        return this.version;
-    }
+    public String getVersion() { return this.version; }
 
     public SimStatus getStatus()
     {
@@ -65,6 +87,11 @@ public class SimCore
         this.log = "";
     }
 
+    /**
+     * Start running the core in the thread
+     * @param arguments
+     * @return Success (false if already running)
+     */
     public boolean start(List<String> arguments)
     {
         if(!running)
@@ -75,13 +102,10 @@ public class SimCore
             coreThread.start();
 
             running = true;
-
             return true;
         }
         else
-        {
             return false;
-        }
     }
 
     public boolean stop()
@@ -89,17 +113,17 @@ public class SimCore
         if(running)
         {
             coreThread.interrupt();
-
             return true;
         }
         else
-        {
             return false;
-        }
     }
 
     private class CoreProcess implements Runnable
     {
+        /**
+         * Runs Core jar with given arguments
+         */
         @Override
         public void run()
         {
@@ -116,8 +140,7 @@ public class SimCore
             status = SimStatus.BOOT;
 
             Process process;
-            try
-            {
+            try {
                 process = processBuilder.start();
             }
             catch(Exception e)
@@ -143,15 +166,11 @@ public class SimCore
 
             while(!Thread.currentThread().isInterrupted() && !logLine.startsWith("#"))
             {
-                try
-                {
+                try {
                     logLine = readLine(reader);
 
                     if(logLine == null)
-                    {
-                        //Input stream closed, exit boot status
-                        break;
-                    }
+                        break; //Input stream closed, exit boot status
 
                     //Add line to log
                     log = log.concat(logLine + "\n");
@@ -161,10 +180,7 @@ public class SimCore
                         errorLine = readLine(errorReader);
 
                         if(errorLine != null)
-                        {
-                            //Add line to log
                             log = log.concat("ERROR: " + errorLine + "\n");
-                        }
                     }
                 }
                 catch(IOException e)
@@ -175,18 +191,13 @@ public class SimCore
                         e.printStackTrace();
 
                         status = SimStatus.ERROR;
-
                         process.destroy();
-
                         running = false;
-
+                        System.out.println(log);
                         return;
                     }
                     else
-                    {
-                        //System interrupted
-                        break;
-                    }
+                        break; //System interrupted
                 }
             }
 
@@ -200,19 +211,14 @@ public class SimCore
 
                     //Add line to log
                     if(logLine != null)
-                    {
                         log = log.concat(logLine + "\n");
-                    }
 
                     while(errorReader.ready() && !Thread.currentThread().isInterrupted() && errorLine != null)
                     {
                         errorLine = readLine(errorReader);
 
                         if(errorLine != null)
-                        {
-                            //Add line to log
-                            log = log.concat("ERROR: " + errorLine + "\n");
-                        }
+                            log = log.concat("ERROR: " + errorLine + "\n"); //Add line to log
                     }
                 }
             }
@@ -221,19 +227,13 @@ public class SimCore
                 if(!Thread.currentThread().isInterrupted())
                 {
                     System.err.println("Could not read input stream!");
+                    System.out.println(log);
                     e.printStackTrace();
 
                     status = SimStatus.ERROR;
-
                     process.destroy();
-
                     running = false;
-
                     return;
-                }
-                else
-                {
-                    //System interrupted
                 }
             }
 
@@ -241,7 +241,6 @@ public class SimCore
             status = SimStatus.SHUTDOWN;
 
             process.destroy();
-
             //Reset cached lines
             logLine = "";
             errorLine = "";
@@ -255,63 +254,45 @@ public class SimCore
 
                     //Add line to log
                     if(logLine != null)
-                    {
                         log = log.concat(logLine + "\n");
-                    }
 
                     while(errorReader.ready() && errorLine != null)
                     {
                         errorLine = readLine(errorReader);
-
                         if(errorLine != null)
-                        {
-                            //Add line to log
-                            log = log.concat("ERROR: " + errorLine + "\n");
-                        }
+                            log = log.concat("ERROR: " + errorLine + "\n"); //Add line to log
                     }
                 }
             }
-            catch(IOException e)
-            {
+            catch(IOException e) {
                 if(!Thread.currentThread().isInterrupted())
                 {
                     System.err.println("Could not read input stream!");
+                    System.out.println(log);
                     e.printStackTrace();
 
                     status = SimStatus.ERROR;
-
                     process.destroy();
-
                     running = false;
-
                     return;
                 }
-                else
-                {
-                    //System interrupted
-                }
             }
 
-            try
-            {
+            try {
                 reader.close();
             }
-            catch(IOException e)
-            {
+            catch(IOException e) {
                 System.err.println("Could not close input stream!");
             }
 
-            try
-            {
+            try {
                 errorReader.close();
             }
-            catch(IOException e)
-            {
+            catch(IOException e) {
                 System.err.println("Could not close error stream!");
             }
 
             status = SimStatus.OFF;
-
             running = false;
         }
     }
@@ -330,12 +311,10 @@ public class SimCore
                 @Override
                 public void run()
                 {
-                    try
-                    {
+                    try {
                         line[0] = reader.readLine();
                     }
-                    catch(IOException e)
-                    {
+                    catch(IOException e) {
                         //Could not open stream
                         exFlag[0] = true;
                         exMessage[0] = e.getMessage();
@@ -350,17 +329,11 @@ public class SimCore
             while(readThread.isAlive() && !Thread.currentThread().isInterrupted());
 
             if(Thread.currentThread().isInterrupted())
-            {
-                //Interrupt read thread
-                readThread.interrupt();
-            }
+                readThread.interrupt(); //Interrupt read thread
             else
             {
                 if(exFlag[0])
-                {
-                    //IOException occurred during reading
-                    throw new IOException(exMessage[0]);
-                }
+                    throw new IOException(exMessage[0]); //IOException occurred during reading
             }
         }
 

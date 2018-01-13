@@ -20,6 +20,9 @@ public class LocationHandler
     private int destinationLocation;
     private double destinationDistance;
     private double travelledDistance;
+    /**
+     * TODO Map per locationhandler useful?
+     */
     private Map map;
     private boolean onMap;
     private Direction currentDirection;
@@ -29,14 +32,15 @@ public class LocationHandler
     /**
      * Backend IP
      */
-    @Value("${robotBackend.ip:default}")
-    String robotBackendIP;
+    //TODO@Value("${robotbackend.ip:default}")
+    String robotBackendIP="smartcity.ddns.net";
     /**
      * Backend Port
      */
-    @Value("#{new Integer(${robotBackend.port})}")
-    int robotBackendPort;
+   //TODO Didn't seem to work @Value("#{new Integer(${robotbackend.port})}")
+    int robotBackendPort=8083;
 
+    //TODO Can be replaced when usage for angles is optimal
     public enum Direction
     {
         NORTH,
@@ -138,8 +142,8 @@ public class LocationHandler
     }
 
     /**
-     * Checks if its on a node
-     * @return
+     * Checks if the vehicle is on a node
+     * @return True/False
      */
     public boolean onNode()
     {
@@ -155,7 +159,7 @@ public class LocationHandler
 
     /**
      * Gets distance from location
-     * @return
+     * @return Distance
      */
     public int getDistanceTargetLocation()
     {
@@ -164,7 +168,7 @@ public class LocationHandler
 
     /**
      * Gets robot current location
-     * @return
+     * @return ID of node position TODO
      */
     public int getCurrentLocation()
     {
@@ -279,6 +283,10 @@ public class LocationHandler
         }
     }
 
+    /**
+     * Rotates vehicle with specified angle and sets the current direction based on that
+     * @param angle Angle to rotate
+     */
     public void turn(double angle)
     {
         this.currentDirection = this.getNewDirection((int)angle);

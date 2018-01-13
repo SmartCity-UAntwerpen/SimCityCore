@@ -2,33 +2,36 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
 
 import be.uantwerpen.sc.services.sockets.SimSocket;
 
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Created by Thomas on 28/05/2016.
  */
 public class EventHandler
 {
-    private QueueHandler events = new QueueHandler();
+    private Queue<Object> events;
 
     public EventHandler()
     {
-        this.events = new QueueHandler();
+        this.events = new LinkedBlockingQueue<>();
     }
 
     public void addEvent(String event)
     {
-        this.events.addElement(event);
+        this.events.offer(event);
     }
 
     public void flushEvents()
     {
-        this.events.flush();
+        this.events.clear();
     }
 
     public void processEvents(SimSocket socket)
     {
         while(!this.events.isEmpty())
         {
-            String event = (String)this.events.getNextElement();
+            String event = (String)this.events.poll();
 
             socket.sendMessage(event + "\r\n");
         }

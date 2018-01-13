@@ -1,5 +1,8 @@
 package be.uantwerpen.sc.tools.smartcar.handlers;
 
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Created by Thomas on 28/05/2016.
  */
@@ -10,7 +13,7 @@ public class DriveHandler
     private float targetPosition;
     private boolean paused;
     private boolean driving;
-    private QueueHandler queue;
+    private Queue<Object> queue;
     private LocationHandler locationHandler;
 
     private static final float MMPD = 0.46f;    //mm per degree
@@ -26,7 +29,7 @@ public class DriveHandler
         this.paused = false;
         this.driving = false;
 
-        this.queue = new QueueHandler();
+        this.queue = new LinkedBlockingQueue<>();
 
         this.locationHandler = null;
     }
@@ -41,14 +44,18 @@ public class DriveHandler
 
     public void newDriveDistanceCommand(float distance)
     {
-        this.queue.addElement(new Event(Event.EventType.DRIVE_EVENT, "DRIVING", distance));
+        this.queue.offer(new Event(Event.EventType.DRIVE_EVENT, "DRIVING", distance));
     }
 
     public void newTurnAngleCommand(float angle)
     {
-        this.queue.addElement(new Event(Event.EventType.DRIVE_EVENT, "TURNING", angle));
+        this.queue.offer(new Event(Event.EventType.DRIVE_EVENT, "TURNING", angle));
     }
 
+    /**
+     * Sets TODO DRiving speed
+     * @param speed TODO
+     */
     public void setSpeed(float speed)
     {
         this.speed = speed;
@@ -129,7 +136,7 @@ public class DriveHandler
 
     public void flushAllDriveTasks()
     {
-        this.queue.flush();
+        this.queue.clear();
     }
 
     public boolean startNextDriveTask()
@@ -138,40 +145,31 @@ public class DriveHandler
         {
             this.currentPosition = 0.0f;
 
-            Event driveCommand = (Event)this.queue.getNextElement();
+            Event driveCommand = (Event)this.queue.poll();
 
-            if(driveCommand.getType() == Event.EventType.DRIVE_EVENT)
-            {
-                if(driveCommand.getProperty().equals("TURNING"))
-                {
+            if(driveCommand.getType() == Event.EventType.DRIVE_EVENT) {
+
+                if(driveCommand.getProperty().equals("TURNING")) {
+
                     this.locationHandler.turn((float)driveCommand.getValue());
 
                     //Total turning distance for wheel
                     this.targetPosition = Math.abs((float)driveCommand.getValue())*MMRD/MMPD;
                 }
-                else if(driveCommand.getProperty().equals("DRIVING"))
-                {
+                else if(driveCommand.getProperty().equals("DRIVING")) {
                     //Total turning angle for the wheels
                     this.targetPosition = (float)driveCommand.getValue()/MMPD;
                 }
                 else
-                {
-                    //Unknown command
-                    return false;
-                }
+                    return false; //Unknown command
 
                 this.driving = true;
-
                 return true;
             }
             else
-            {
                 return false;
-            }
         }
         else
-        {
             return false;
-        }
     }
 }

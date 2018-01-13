@@ -94,7 +94,11 @@ public class TCPUtils extends Thread {
         }
     }
 
-    //sends message over clientSocket to vehicle
+
+    /**
+     * Tends message over clientSocket to vehicle
+     * @param data message to send
+     */
     public void sendUpdate(String data) {
         Socket clientSocket = null;
         DataInputStream inputLine = new DataInputStream(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
@@ -133,6 +137,9 @@ public class TCPUtils extends Thread {
         }
     }
 
+    /**
+     * Closes TCP connection
+     */
     public void closeTCP(){
         try {
             socket.close();

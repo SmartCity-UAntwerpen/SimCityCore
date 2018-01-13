@@ -73,9 +73,7 @@ public class SimCoresService
             while(i < coreList.getLength() && !found)
             {
                 Node coreNode = coreList.item(i);
-
-                try
-                {
+                try {
                     if(coreNode.getNodeType() == Node.ELEMENT_NODE)
                     {
                         Element element = (Element) coreNode;
@@ -84,8 +82,7 @@ public class SimCoresService
 
                         if(element.getAttribute("type").equals(type))
                         {
-                            try
-                            {
+                            try {
                                 coreLocation = element.getElementsByTagName("jar").item(0).getTextContent();
 
                                 //Check if core file exists
@@ -94,9 +91,7 @@ public class SimCoresService
                                     File locationTest = new File(jarFileLocation + coreResourceFolder + coreLocation);
 
                                     if(locationTest.exists())
-                                    {
                                         coreLocation = coreResourceFolder + coreLocation;
-                                    }
                                     else
                                     {
                                         //Core file can not be found in filesystem!
@@ -106,17 +101,14 @@ public class SimCoresService
                                     }
                                 }
                             }
-                            catch(Exception e)
-                            {
+                            catch(Exception e) {
                                 throw new Exception("JAR attribute unknown!");
                             }
 
-                            try
-                            {
+                            try {
                                 coreVersion = element.getElementsByTagName("version").item(0).getTextContent();
                             }
-                            catch(Exception e)
-                            {
+                            catch(Exception e) {
                                 throw new Exception("VERSION attribute unknown!");
                             }
 
@@ -127,19 +119,15 @@ public class SimCoresService
 
                     i++;
                 }
-                catch(Exception e)
-                {
+                catch(Exception e) {
                     System.err.println("Failed to parse Core configuration. Configuration file contains errors! Exception: " + e.getMessage());
                 }
             }
 
             if(!found)
-            {
                 System.err.println("Could not find core of type: " + type + " in the configuration file!");
-            }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             System.err.println("Could not parse configuration file: " + coreResourceFolder + coreConfigFile + "!");
             e.printStackTrace();
         }
