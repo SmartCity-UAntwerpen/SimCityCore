@@ -33,7 +33,6 @@ public class SimCoresService
         jarFileLocation = jarFile;
     }
 
-    private final static String coreResourceFolder = "";
     private final static String coreConfigFile = "BotCoreConfig.xml";
 
     public static SimCore getSimulationCore(SimBot bot)
@@ -49,7 +48,7 @@ public class SimCoresService
         SimCore simCore = null;
 
         // The location is based on the development mode and the supplied location in the corresponding properties file
-        File configFile = new File(configFileLocation + coreResourceFolder + coreConfigFile);
+        File configFile = new File(configFileLocation + coreConfigFile);
 
         if(!configFile.exists() || configFile.isDirectory())
         {
@@ -88,12 +87,9 @@ public class SimCoresService
                                 //Check if core file exists
                                 if(!new File(coreLocation).exists())
                                 {
-                                    File locationTest = new File(jarFileLocation + coreResourceFolder + coreLocation);
+                                    File locationTest = new File(jarFileLocation + coreLocation);
 
-                                    if(locationTest.exists())
-                                        coreLocation = coreResourceFolder + coreLocation;
-                                    else
-                                    {
+                                    if(!locationTest.exists()) {
                                         //Core file can not be found in filesystem!
                                         System.err.println("JAR file: '" + locationTest.getAbsolutePath() + "' can not be found!");
 
@@ -129,7 +125,7 @@ public class SimCoresService
                 System.err.println("Could not find core of type: " + type + " in the configuration file!");
         }
         catch(Exception e) {
-            System.err.println("Could not parse configuration file: " + coreResourceFolder + coreConfigFile + "!");
+            System.err.println("Could not parse configuration file: " + coreConfigFile + "!");
             e.printStackTrace();
         }
 
