@@ -7,16 +7,10 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 // SimCity application run
 @SpringBootApplication
-public class SimCityApplication extends SpringBootServletInitializer
+public class SimCityApplication
 {
 	public static void main(String[] args)
 	{
 		SpringApplication.run(SimCityApplication.class, args);
-	}
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder)
-	{
-		return applicationBuilder.sources(SimCityApplication.class);
 	}
 }
