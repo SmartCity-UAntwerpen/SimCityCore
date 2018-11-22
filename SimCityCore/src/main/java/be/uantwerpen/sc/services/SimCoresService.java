@@ -33,7 +33,7 @@ public class SimCoresService
         jarFileLocation = jarFile;
     }
 
-    private final static String coreResourceFolder = "configTemplates/";
+    private final static String coreResourceFolder = "";
     private final static String coreConfigFile = "BotCoreConfig.xml";
 
     public static SimCore getSimulationCore(SimBot bot)
@@ -97,6 +97,7 @@ public class SimCoresService
                                         //Core file can not be found in filesystem!
                                         System.err.println("JAR file: '" + locationTest.getAbsolutePath() + "' can not be found!");
 
+                                        i++;
                                         continue;
                                     }
                                 }
