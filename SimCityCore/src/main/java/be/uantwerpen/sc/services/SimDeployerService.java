@@ -82,6 +82,8 @@ public class SimDeployerService implements TCPListener {
             result = createVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
         } else if (message.matches("run\\s[0-9]+")) {
             result = startupVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
+        } else if (message.matches("ping")) {
+            return "PONG";
         } else if (message.matches("stop\\s[0-9]+")) {
             result = stopVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
         } else if (message.matches("kill\\s[0-9]+")) {
