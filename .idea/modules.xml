@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SimCityCore/SimCityCore.iml" filepath="$PROJECT_DIR$/SimCityCore/SimCityCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RobotSim/RobotSim.iml" filepath="$PROJECT_DIR$/RobotSim/RobotSim.iml" />
       <module fileurl="file://$PROJECT_DIR$/SmartCity Common/SmartCity Common.iml" filepath="$PROJECT_DIR$/SmartCity Common/SmartCity Common.iml" />
     </modules>
   </component>
