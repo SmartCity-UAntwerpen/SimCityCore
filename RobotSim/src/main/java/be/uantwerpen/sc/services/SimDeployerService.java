@@ -26,7 +26,7 @@ public class SimDeployerService implements TCPListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SimDeployerService.class);
     /**
-     * Port on which the simulation will accept TODO requests
+     * Port on which the simulation will accept to do requests
      */
     @Value("#{new Integer(${simPort})}")
     private int simPort;
@@ -53,6 +53,9 @@ public class SimDeployerService implements TCPListener {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private SimFactory simFactory;
 
     public SimDeployerService() throws IOException {
     }
@@ -148,7 +151,7 @@ public class SimDeployerService implements TCPListener {
      */
     private boolean createVehicle(long simulationID){
         if (!simulatedVehicles.containsKey(simulationID)) {
-            SimCar newCar = new SimCar();
+            SimCar newCar = simFactory.createSimCar();
             simulatedVehicles.put(simulationID, newCar);
             logger.info("New simulated vehicle registered with simulation ID " + simulationID + ".");
             //Log.logInfo("SIMDEPLOYER", "New simulated vehicle registered with simulation ID " + simulationID + ".");

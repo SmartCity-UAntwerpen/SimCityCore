@@ -30,14 +30,12 @@ public abstract class SimBot implements Runnable
     /**
      * Backend IP
      */
-    //@Value("${robotbackend.ip:default}")//TODO Currently doesnt work
     String robotBackendIP="smartcity.ddns.net";
 
     /**
      * Backend Port
      */
-   // @Value("#{new Integer(${robotbackend.port})}")//TODO currently doesnt work
-    int robotBackendPort=8083;
+    int robotBackendPort;
 
     protected SimBot()
     {
@@ -173,6 +171,15 @@ public abstract class SimBot implements Runnable
         {
             this.simulationProcess();
         }
+    }
+
+    // setters for factory
+    public void setRobotBackendIP(String robotBackendIP) {
+        this.robotBackendIP = robotBackendIP;
+    }
+
+    public void setRobotBackendPort(int robotBackendPort) {
+        this.robotBackendPort = robotBackendPort;
     }
 
     abstract protected void simulationProcess();
