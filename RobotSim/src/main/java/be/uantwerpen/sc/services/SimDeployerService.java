@@ -5,6 +5,8 @@ import be.uantwerpen.sc.models.sim.SimCar;
 import be.uantwerpen.sc.models.sim.deployer.Log;
 import be.uantwerpen.sc.models.sim.deployer.TCPListener;
 import be.uantwerpen.sc.models.sim.deployer.TCPUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,7 @@ import java.util.logging.Level;
 @Service
 public class SimDeployerService implements TCPListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(SimDeployerService.class);
     /**
      * Port on which the simulation will accept TODO requests
      */
@@ -63,10 +66,12 @@ public class SimDeployerService implements TCPListener {
             tcpUtils = new TCPUtils(simPort, this,true);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.logSevere("SIMDEPLOYER", "SimDeployer could not be started. TCP IO-exception.");
+            logger.error("SimDeployer could not be started. TCP IO-exception.");
+            //Log.logSevere("SIMDEPLOYER", "SimDeployer could not be started. TCP IO-exception.");
         }
         tcpUtils.start();
-        Log.logInfo("SIMDEPLOYER", "SimDeployer has been started.");
+        logger.info("SimDeployer has been started.");
+        //Log.logInfo("SIMDEPLOYER", "SimDeployer has been started.");
     }
 
     /**
@@ -116,11 +121,13 @@ public class SimDeployerService implements TCPListener {
         if (simulatedVehicles.containsKey(simulationID)) {
             try {
                 if (simulatedVehicles.get(simulationID).parseProperty(parameter, argument)) {
-                    Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " property set.");
+                    logger.info("Simulated Vehicle with simulation ID \" + simulationID + \" property set.");
+                    //Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " property set.");
                     return true;
                 }
                 else {
-                    Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " property could not be set.");
+                    logger.info("Simulated Vehicle with simulation ID " + simulationID + " property could not be set.");
+                    //Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " property could not be set.");
                     return false;
                 }
             } catch (Exception e) {
@@ -128,7 +135,8 @@ public class SimDeployerService implements TCPListener {
                 return false;
             }
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot set property of vehicle with simulation ID " + simulationID + ". It does not exist.");
+            logger.warn("Cannot set property of vehicle with simulation ID " + simulationID + ". It does not exist.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot set property of vehicle with simulation ID " + simulationID + ". It does not exist.");
             return false;
         }
     }
@@ -142,10 +150,12 @@ public class SimDeployerService implements TCPListener {
         if (!simulatedVehicles.containsKey(simulationID)) {
             SimCar newCar = new SimCar();
             simulatedVehicles.put(simulationID, newCar);
-            Log.logInfo("SIMDEPLOYER", "New simulated vehicle registered with simulation ID " + simulationID + ".");
+            logger.info("New simulated vehicle registered with simulation ID " + simulationID + ".");
+            //Log.logInfo("SIMDEPLOYER", "New simulated vehicle registered with simulation ID " + simulationID + ".");
             return true;
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot create vehicle with simulation ID " + simulationID + ". It already exists.");
+            logger.warn("Cannot create vehicle with simulation ID " + simulationID + ". It already exists.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot create vehicle with simulation ID " + simulationID + ". It already exists.");
             return false;
         }
     }
@@ -158,15 +168,18 @@ public class SimDeployerService implements TCPListener {
     private boolean stopVehicle(long simulationID) {
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).stop()) {
-                Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " Stopped.");
+                logger.info("Vehicle with ID " + simulationID + " Stopped.");
+                //Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " Stopped.");
                 return true;
             }
             else {
-                Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " cannot be stopped.");
+                logger.info("Vehicle with ID " + simulationID + " cannot be stopped.");
+                //Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " cannot be stopped.");
                 return false;
             }
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot stop vehicle with simulation ID " + simulationID + ". It does not exist.");
+            logger.warn("Cannot stop vehicle with simulation ID " + simulationID + ". It does not exist.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot stop vehicle with simulation ID " + simulationID + ". It does not exist.");
             return false;
         }
     }
@@ -181,13 +194,16 @@ public class SimDeployerService implements TCPListener {
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).remove()) {
                 simulatedVehicles.remove(simulationID);
-                Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " killed.");
+                //Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " killed.");
+                logger.info("Vehicle with ID " + simulationID + " killed.");
                 return true;
             }
-            Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " cannot be killed.");
+            logger.info("Vehicle with ID " + simulationID + " cannot be killed.");
+            //Log.logInfo("SIMDEPLOYER", "Vehicle with ID " + simulationID + " cannot be killed.");
             return true;
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot kill vehicle with simulation ID " + simulationID + ". It does not exist.");
+            logger.warn("Cannot kill vehicle with simulation ID " + simulationID + ". It does not exist.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot kill vehicle with simulation ID " + simulationID + ". It does not exist.");
             return false;
         }
     }
@@ -200,14 +216,17 @@ public class SimDeployerService implements TCPListener {
     private boolean restartVehicle(long simulationID){
         if (simulatedVehicles.containsKey(simulationID)) {
             if (simulatedVehicles.get(simulationID).restart()) {
-                Log.logInfo("SIMDEPLOYER", "Restarted vehicle with simulation ID " + simulationID + ".");
+                //Log.logInfo("SIMDEPLOYER", "Restarted vehicle with simulation ID " + simulationID + ".");
+                logger.info("Restarted vehicle with simulation ID " + simulationID + ".");
                 return true;
             } else {
-                Log.logWarning("SIMDEPLOYER", "Cannot restart vehicle with simulation ID " + simulationID + ". It isn't started.");
+                logger.warn("Cannot restart vehicle with simulation ID " + simulationID + ". It isn't started.");
+                //Log.logWarning("SIMDEPLOYER", "Cannot restart vehicle with simulation ID " + simulationID + ". It isn't started.");
                 return false;
             }
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot restart vehicle with simulation ID " + simulationID + ". It does not exist.");
+            logger.warn("Cannot restart vehicle with simulation ID " + simulationID + ". It does not exist.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot restart vehicle with simulation ID " + simulationID + ". It does not exist.");
             return false;
         }
     }
@@ -221,18 +240,22 @@ public class SimDeployerService implements TCPListener {
         if (simulatedVehicles.containsKey(simulationID)) {
             if(simulatedVehicles.get(simulationID).getStartPoint() != -1) {
                 if (simulatedVehicles.get(simulationID).start()) {
-                    Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " started.");
+                    logger.info("Simulated Vehicle with simulation ID " + simulationID + " started.");
+                    //Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " started.");
                     return true;
                 } else {
-                    Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
+                    logger.warn("Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
+                    //Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
                     return false;
                 }
             } else {
-                Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
+                logger.warn("Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
+                //Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It didn't have a starting point set.");
                 return false;
             }
         } else {
-            Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It does not exist.");
+            logger.warn("Cannot start vehicle with simulation ID " + simulationID + ". It does not exist.");
+            //Log.logWarning("SIMDEPLOYER", "Cannot start vehicle with simulation ID " + simulationID + ". It does not exist.");
             return false;
         }
     }
