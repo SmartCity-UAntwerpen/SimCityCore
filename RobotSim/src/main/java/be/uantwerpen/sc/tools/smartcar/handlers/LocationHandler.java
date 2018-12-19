@@ -3,7 +3,9 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
 import be.uantwerpen.rc.models.map.Link;
 import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
+import be.uantwerpen.sc.configurations.SpringContext;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,13 +33,11 @@ public class LocationHandler
     /**
      * Backend IP
      */
-    //TODO@Value("${robotbackend.ip:default}")
-    String robotBackendIP="localhost";
+    private String robotBackendIP;
     /**
      * Backend Port
      */
-   //TODO Didn't seem to work @Value("#{new Integer(${robotbackend.port})}")
-    int robotBackendPort=8083;
+    private int robotBackendPort;
 
     public LocationHandler()
     {
@@ -50,6 +50,11 @@ public class LocationHandler
         this.destinationDirection = 0;
         this.followLine = false;
 
+        //Get values from spring
+        ApplicationContext context =  SpringContext.getAppContext();
+        this.robotBackendIP = context.getEnvironment().getProperty("robotbackend.ip");
+        String portString = context.getEnvironment().getProperty("robotbackend.port");
+        this.robotBackendPort = Integer.parseInt(portString);
     }
 
     /**
