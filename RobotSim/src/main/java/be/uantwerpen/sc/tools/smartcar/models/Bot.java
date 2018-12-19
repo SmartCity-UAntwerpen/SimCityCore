@@ -1,7 +1,7 @@
 package be.uantwerpen.sc.tools.smartcar.models;
 
 
-import be.uantwerpen.sc.models.Link;
+import be.uantwerpen.rc.models.map.Link;
 
 /**
  * Created by Niels on 24/03/2016.
