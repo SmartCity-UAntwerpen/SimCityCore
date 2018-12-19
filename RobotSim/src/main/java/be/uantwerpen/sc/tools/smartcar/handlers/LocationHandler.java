@@ -1,8 +1,8 @@
 package be.uantwerpen.sc.tools.smartcar.handlers;
 
-import be.uantwerpen.sc.tools.smartcar.models.map.Link;
-import be.uantwerpen.sc.tools.smartcar.models.map.Map;
-import be.uantwerpen.sc.tools.smartcar.models.map.Node;
+import be.uantwerpen.rc.models.map.Link;
+import be.uantwerpen.rc.models.map.Map;
+import be.uantwerpen.rc.models.map.Node;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -16,49 +16,38 @@ import java.util.Iterator;
  */
 public class LocationHandler
 {
-    private int currentLocation;
-    private int destinationLocation;
+    private long currentLocation;
+    private long destinationLocation;
     private double destinationDistance;
-    private double travelledDistance;
     /**
      * TODO Map per locationhandler useful?
      */
     private Map map;
     private boolean onMap;
-    private Direction currentDirection;
-    private Direction destinationDirection;
+    private double currentDirection;
+    private double destinationDirection;
     private boolean followLine;
 
     /**
      * Backend IP
      */
     //TODO@Value("${robotbackend.ip:default}")
-    String robotBackendIP="smartcity.ddns.net";
+    String robotBackendIP="localhost";
     /**
      * Backend Port
      */
    //TODO Didn't seem to work @Value("#{new Integer(${robotbackend.port})}")
     int robotBackendPort=8083;
 
-    //TODO Can be replaced when usage for angles is optimal
-    public enum Direction
-    {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST
-    }
-
     public LocationHandler()
     {
         this.currentLocation = -1;
         this.destinationLocation = -1;
         this.destinationDistance = 0L;
-        this.travelledDistance = 0L;
         this.map = null;
         this.onMap = false;
-        this.currentDirection = Direction.NORTH;
-        this.destinationDirection = Direction.NORTH;
+        this.currentDirection = 0;
+        this.destinationDirection = 0;
         this.followLine = false;
 
     }
@@ -101,23 +90,13 @@ public class LocationHandler
         if(found && startNode.getNeighbours().size() > 0)
         {
             //Determine destination location (bot starts on edge point)
-            try {
-                this.currentDirection = parseDirection(startNode.getNeighbours().get(0).getStartDirection());
+            this.currentDirection = startNode.getNeighbours().get(0).getAngle();
 
-                //Destination location (look direction) is opposite of absolute drive in direction
-                int lookDirection = (parseDirection(startNode.getNeighbours().get(0).getStopDirection()).ordinal() + 2) % 4;
-                this.destinationDirection = Direction.values()[lookDirection];
-            }
-            catch(ParseException e) {
-                //Unknown direction
-                System.err.println("Could not find start position for id " + startPosition + "!");
-                System.err.println(e.getMessage());
-                return false;
-            }
+            //Destination location (look direction) is opposite of absolute drive in direction
+            this.destinationDirection = startNode.getNeighbours().get(0).getAngle() % 360;
 
-            this.destinationLocation = startNode.getNeighbours().get(0).getStopPoint().getPid();
-            this.destinationDistance = startNode.getNeighbours().get(0).getLength();
-            this.travelledDistance = 0L;
+            this.destinationLocation = startNode.getNeighbours().get(0).getEndPoint().getId();
+            this.destinationDistance = startNode.getNeighbours().get(0).getWeight(); //FIXME can weight be used instead of length?
 
             this.currentLocation = startPosition;
         }
@@ -147,14 +126,8 @@ public class LocationHandler
      */
     public boolean onNode()
     {
-        if(this.onMap) {
-            if(travelledDistance == 0 || (travelledDistance <= destinationDistance + 10 && travelledDistance >= destinationDistance - 10))
-                return true;
-            else
-                return false;
-        }
-        else
-            return false;
+        //TODO
+        return false;
     }
 
     /**
@@ -172,7 +145,7 @@ public class LocationHandler
      */
     public int getCurrentLocation()
     {
-        return this.currentLocation;
+        return (int) this.currentLocation;
     }
 
     /**
@@ -188,7 +161,7 @@ public class LocationHandler
         for(Node node : this.map.getNodeList())
         {
             if(node.getNodeId() == nodeID)
-                return node.getPointEntity().getRfid();
+                return node.getPointEntity().getTile().getRfid();
         }
         return null;
     }
@@ -196,6 +169,7 @@ public class LocationHandler
     /**
      * Starts bot following a simulated line
      */
+    // Hoofdtaak is bepalen over welke afstand de lijn doorloopt
     public void startFollowLine()
     {
         Node currentNode = null;
@@ -205,6 +179,7 @@ public class LocationHandler
         boolean foundNode = false;
         Iterator<Node> itNode = this.map.getNodeList().iterator();
 
+        //Search current node
         while(itNode.hasNext() && !foundNode)
         {
             Node node = itNode.next();
@@ -222,39 +197,22 @@ public class LocationHandler
             Link followLink = null;
 
             while(itLink.hasNext() && !foundLink) {
-
                 Link link = itLink.next();
-                try {
-                    Direction direction = parseDirection(link.getStartDirection());
-                    if(direction == this.currentDirection)
-                    {
-                        followLink = link;
-                        foundLink = true;
-                    }
-                }
-                catch(ParseException e) {
-                    //Could not parse direction
-                    System.err.println("Could not parse start direction of link with id " + link.getId());
-                    System.err.println(e.getMessage());
+
+                double direction = link.getAngle();
+                if(direction == this.currentDirection)
+                {
+                    followLink = link;
+                    foundLink = true;
                 }
             }
 
             if(foundLink) {
-                try {
-                    //Destination location (look direction) is opposite of absolute drive in direction
-                    int lookDirection = (parseDirection(followLink.getStopDirection()).ordinal() + 2) % 4;
-                    this.destinationDirection = Direction.values()[lookDirection];
-                }
-                catch(ParseException e) {
-                    //Could not parse direction
-                    System.err.println("Could not parse end direction of link with id " + followLink.getId());
-                    System.err.println(e.getMessage());
-                }
+                //Destination location (look direction) is opposite of absolute drive in direction
+                this.destinationDirection = followLink.getAngle() + 180;
 
-                this.destinationLocation = followLink.getStopPoint().getPid();
-                this.destinationDistance = followLink.getLength();
-
-                this.travelledDistance = 0;
+                this.destinationLocation = followLink.getEndPoint().getId();
+                this.destinationDistance = followLink.getWeight(); // FIXME should be length!
 
                 this.followLine = true;
             }
@@ -289,49 +247,9 @@ public class LocationHandler
      */
     public void turn(double angle)
     {
-        this.currentDirection = this.getNewDirection((int)angle);
+        this.currentDirection += ((int)angle) % 360;
     }
 
-    /**
-     * Converts input string to direction
-     * @param direction Direction as string
-     * @return Out direction
-     * @throws ParseException Direction not found
-     */
-    private Direction parseDirection(String direction) throws ParseException
-    {
-        switch(direction) {
-            case "N":
-                return Direction.NORTH;
-            case "E":
-                return Direction.EAST;
-            case "Z":
-                return Direction.SOUTH;
-            case "W":
-                return Direction.WEST;
-            default:
-                throw new ParseException("Could not parse direction: " + direction, 0);
-        }
-    }
-
-    /**
-     * Transforms angle to Direction in reference to the current direction
-     * @param turnAngle Angle to turn
-     * @return Direction found
-     */
-    private Direction getNewDirection(int turnAngle) {
-        //Positive angle == turn left, Negative angle = turn right
-        int numberOfQuartTurns = -Math.round(turnAngle / 90) % 4;
-
-        //Relative to North == 0
-        int newRelativeDirection = (this.currentDirection.ordinal() + numberOfQuartTurns) % 4;
-
-        if(newRelativeDirection < 0) {
-            //Convert negative value to positive counterpart
-            newRelativeDirection = newRelativeDirection + 4;
-        }
-        return Direction.values()[newRelativeDirection];
-    }
 
     /**
      * Gets map from Robot Backend
