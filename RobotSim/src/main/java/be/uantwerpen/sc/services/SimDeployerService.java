@@ -124,7 +124,7 @@ public class SimDeployerService implements TCPListener {
         if (simulatedVehicles.containsKey(simulationID)) {
             try {
                 if (simulatedVehicles.get(simulationID).parseProperty(parameter, argument)) {
-                    logger.info("Simulated Vehicle with simulation ID \" + simulationID + \" property set.");
+                    logger.info("Simulated Vehicle with simulation ID " + simulationID + " property set.");
                     //Log.logInfo("SIMDEPLOYER", "Simulated Vehicle with simulation ID " + simulationID + " property set.");
                     return true;
                 }
