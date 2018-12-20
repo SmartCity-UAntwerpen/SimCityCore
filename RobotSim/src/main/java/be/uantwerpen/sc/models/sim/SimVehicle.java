@@ -3,6 +3,7 @@ package be.uantwerpen.sc.models.sim;
 import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
+import be.uantwerpen.rc.models.map.Tile;
 import be.uantwerpen.sc.configurations.SpringContext;
 import be.uantwerpen.sc.services.MapService;
 import org.springframework.context.ApplicationContext;
@@ -10,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by Thomas on 5/05/2017.
@@ -128,12 +130,21 @@ public abstract class SimVehicle extends SimBot
         ApplicationContext context =  SpringContext.getAppContext();
         MapService service = context.getBean(MapService.class);
 
-        service.updateMap();
-        Map map = service.getMap();
-        Point startPoint = selectStartPoint(map.getNodeList());
-        if(startPoint == null) return false; // no free point
+        Queue<Point> startPoints = service.getStartPoints();
 
-        int startId = (int) (long) startPoint.getId();
+        boolean freePoint = false;
+        Point point = null;
+
+        // get latest data
+        service.updateMap();
+
+        while(startPoints.size() > 0 && !freePoint) {
+            point = startPoints.poll();
+            if(!service.checkPointLock(point)) freePoint = true;
+        }
+        if(point == null) return false;
+
+        int startId = (int) (long) point.getId();
         this.setStartPoint(startId);
 
         System.out.println("Selected startpoint "+startId);
@@ -141,15 +152,4 @@ public abstract class SimVehicle extends SimBot
         return true;
     }
 
-    private Point selectStartPoint(List<Node> nodes) {
-        Collections.shuffle(nodes); // randomize order
-        for(Node node: nodes) {
-            Point point = node.getPointEntity();
-            if(!point.getTileLock()) {
-                return point;
-            }
-        }
-
-        return null;
-    }
 }
