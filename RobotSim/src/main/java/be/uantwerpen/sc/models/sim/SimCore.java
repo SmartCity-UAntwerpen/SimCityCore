@@ -337,6 +337,10 @@ public class SimCore
             }
         }
 
+        if(line[0] != null) {
+            System.out.println("Core: "+line[0]);
+        }
+
         return line[0];
     }
 }

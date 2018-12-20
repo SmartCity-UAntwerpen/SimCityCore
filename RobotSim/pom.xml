@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>be.uantwerpen.sc</groupId>
-    <artifactId>SimCityCore</artifactId>
+    <artifactId>RobotSim</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>SimCity Core</name>
-    <description>SimCity Core</description>
+    <name>RobotSim</name>
+    <description>Simulator for smartCars</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

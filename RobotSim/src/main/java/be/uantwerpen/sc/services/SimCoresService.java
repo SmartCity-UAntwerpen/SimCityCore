@@ -109,7 +109,7 @@ public class SimCoresService
                                 throw new Exception("VERSION attribute unknown!");
                             }
 
-                            simCore = new SimCore(coreLocation, coreVersion);
+                            simCore = new SimCore(jarFileLocation + coreLocation, coreVersion);
                             found = true;
                         }
                     }
