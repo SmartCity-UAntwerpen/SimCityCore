@@ -120,8 +120,8 @@ public class LocationHandler
      */
     public boolean onNode()
     {
-        //TODO
-        return false;
+        if(currentLocation == null) return false;
+        else return currentLocation.getId().equals(destinationLocation.getId());
     }
 
     /**
