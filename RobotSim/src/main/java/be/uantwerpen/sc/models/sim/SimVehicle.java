@@ -1,8 +1,15 @@
 package be.uantwerpen.sc.models.sim;
 
+import be.uantwerpen.rc.models.map.Map;
+import be.uantwerpen.rc.models.map.Node;
+import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
 import be.uantwerpen.sc.services.MapService;
 import org.springframework.context.ApplicationContext;
+import org.w3c.dom.NodeList;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Thomas on 5/05/2017.
@@ -121,6 +128,28 @@ public abstract class SimVehicle extends SimBot
         ApplicationContext context =  SpringContext.getAppContext();
         MapService service = context.getBean(MapService.class);
 
-        return false;
+        service.updateMap();
+        Map map = service.getMap();
+        Point startPoint = selectStartPoint(map.getNodeList());
+        if(startPoint == null) return false; // no free point
+
+        int startId = (int) (long) startPoint.getId();
+        this.setStartPoint(startId);
+
+        System.out.println("Selected startpoint "+startId);
+
+        return true;
+    }
+
+    private Point selectStartPoint(List<Node> nodes) {
+        Collections.shuffle(nodes); // randomize order
+        for(Node node: nodes) {
+            Point point = node.getPointEntity();
+            if(!point.getTileLock()) {
+                return point;
+            }
+        }
+
+        return null;
     }
 }

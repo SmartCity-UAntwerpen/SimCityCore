@@ -34,7 +34,8 @@ public class MapService {
 
     @PostConstruct
     public void init() {
-        map =loadMap();
+        logger.info("Loading robot map from backend...");
+        map = loadMap();
     }
 
     /**
@@ -43,7 +44,6 @@ public class MapService {
      */
     private Map loadMap()
     {
-        logger.info("Loading robot map from backend...");
         RestTemplate template = new RestTemplate();
         ResponseEntity<Map> responseMap;
         Map map;
@@ -57,5 +57,10 @@ public class MapService {
 
     public Map getMap() {
         return map;
+    }
+
+    public void updateMap() {
+        logger.info("Updating map");
+        map = loadMap();
     }
 }
