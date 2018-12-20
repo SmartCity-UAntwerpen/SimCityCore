@@ -23,10 +23,8 @@ public class LocationHandler
     private Point currentLocation;
     private Point destinationLocation;
     private double destinationDistance;
-    /**
-     * TODO Map per locationhandler useful?
-     */
-    private Map map;
+
+    private static Map map = null;
     private boolean onMap;
     private boolean followLine;
 
@@ -44,7 +42,6 @@ public class LocationHandler
         this.currentLocation = null;
         this.destinationLocation = null;
         this.destinationDistance = 0L;
-        this.map = null;
         this.onMap = false;
         this.followLine = false;
 
@@ -63,7 +60,7 @@ public class LocationHandler
     public boolean initLocationHandler(int startPosition)
     {
         try {
-            this.map = this.getMap();
+            if(map == null) map = this.getMap(); // only load if not initialized
         }
         catch(Exception e) {
             System.err.println("Could not connect to SmartCity Core for map!");
@@ -71,14 +68,14 @@ public class LocationHandler
             return false;
         }
 
-        if(this.map == null) {
+        if(map == null) {
             System.err.println("Could not retrieve map from SmartCity Core!");
             return false;
         }
 
         //Find start node if existing
         boolean found = false;
-        Iterator<Node> it = this.map.getNodeList().iterator();
+        Iterator<Node> it = map.getNodeList().iterator();
         Node startNode = null;
 
         while(it.hasNext() && ! found) {
@@ -155,7 +152,7 @@ public class LocationHandler
         if(map == null)
             return null; //No map loaded
 
-        for(Node node : this.map.getNodeList())
+        for(Node node : map.getNodeList())
         {
             if(node.getNodeId() == nodeID)
                 return node.getPointEntity().getTile().getRfid();
