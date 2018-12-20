@@ -1,5 +1,9 @@
 package be.uantwerpen.sc.models.sim;
 
+import be.uantwerpen.sc.configurations.SpringContext;
+import be.uantwerpen.sc.services.MapService;
+import org.springframework.context.ApplicationContext;
+
 /**
  * Created by Thomas on 5/05/2017.
  * SimVehicle subclass from SimBot
@@ -56,9 +60,14 @@ public abstract class SimVehicle extends SimBot
                 }
             case "startpoint":
                 try {
-                    int startPoint = Integer.parseInt(value);
-                    this.setStartPoint(startPoint);
-                    return true;
+                    if(value.equals("auto")) {
+                        return automaticStartPoint();
+                    }
+                    else {
+                        int startPoint = Integer.parseInt(value);
+                        this.setStartPoint(startPoint);
+                        return true;
+                    }
                 }
                 catch(Exception e) {
                     throw new Exception("Could not parse value for start point setting! " + e.getMessage());
@@ -103,5 +112,15 @@ public abstract class SimVehicle extends SimBot
             default:
                 return false;
         }
+    }
+
+    private boolean automaticStartPoint() {
+        System.out.println("Setting starting point automatically...");
+
+        //Get values from spring
+        ApplicationContext context =  SpringContext.getAppContext();
+        MapService service = context.getBean(MapService.class);
+
+        return false;
     }
 }
