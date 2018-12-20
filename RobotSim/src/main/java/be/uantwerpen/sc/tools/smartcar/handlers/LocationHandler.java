@@ -3,6 +3,7 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
 import be.uantwerpen.rc.models.map.Link;
 import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
+import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Thomas on 28/05/2016.
@@ -18,16 +20,14 @@ import java.util.Iterator;
  */
 public class LocationHandler
 {
-    private long currentLocation;
-    private long destinationLocation;
+    private Point currentLocation;
+    private Point destinationLocation;
     private double destinationDistance;
     /**
      * TODO Map per locationhandler useful?
      */
     private Map map;
     private boolean onMap;
-    private double currentDirection;
-    private double destinationDirection;
     private boolean followLine;
 
     /**
@@ -41,13 +41,11 @@ public class LocationHandler
 
     public LocationHandler()
     {
-        this.currentLocation = -1;
-        this.destinationLocation = -1;
+        this.currentLocation = null;
+        this.destinationLocation = null;
         this.destinationDistance = 0L;
         this.map = null;
         this.onMap = false;
-        this.currentDirection = 0;
-        this.destinationDirection = 0;
         this.followLine = false;
 
         //Get values from spring
@@ -94,16 +92,10 @@ public class LocationHandler
         //Node needs at least one neighbour to navigate
         if(found && startNode.getNeighbours().size() > 0)
         {
-            //Determine destination location (bot starts on edge point)
-            this.currentDirection = startNode.getNeighbours().get(0).getAngle();
+            this.destinationLocation = startNode.getNeighbours().get(0).getEndPoint();
+            this.destinationDistance = startNode.getNeighbours().get(0).getLength();
 
-            //Destination location (look direction) is opposite of absolute drive in direction
-            this.destinationDirection = startNode.getNeighbours().get(0).getAngle() % 360;
-
-            this.destinationLocation = startNode.getNeighbours().get(0).getEndPoint().getId();
-            this.destinationDistance = startNode.getNeighbours().get(0).getWeight(); //FIXME can weight be used instead of length?
-
-            this.currentLocation = startPosition;
+            this.currentLocation = findPointById(startPosition);
         }
         else {
             System.err.println("Could not find start position for id " + startPosition + "!");
@@ -150,7 +142,7 @@ public class LocationHandler
      */
     public int getCurrentLocation()
     {
-        return (int) this.currentLocation;
+        return (int) (long) this.currentLocation.getId();
     }
 
     /**
@@ -177,57 +169,35 @@ public class LocationHandler
     // Hoofdtaak is bepalen over welke afstand de lijn doorloopt
     public void startFollowLine()
     {
-        Node currentNode = null;
         if(map == null)
             return; //No map loaded
 
-        boolean foundNode = false;
-        Iterator<Node> itNode = this.map.getNodeList().iterator();
+        Node currentNode = findNodeByPointId(currentLocation.getId());
+        if(currentNode == null) {
+            System.err.println("Couldn't find node for point!");
+            return;
+        }
+        Iterator<Link> linkIt = currentNode.getNeighbours().iterator();
 
-        //Search current node
-        while(itNode.hasNext() && !foundNode)
-        {
-            Node node = itNode.next();
-            if(node.getNodeId() == this.currentLocation)
-            {
-                currentNode = node;
-                foundNode = true;
+        Link futureLink = null;
+
+        while(linkIt.hasNext() && futureLink == null) {
+            Link link = linkIt.next();
+
+            if(link.getStartPoint().equals(currentLocation)) {
+                //Link has correct direction
+                futureLink = link;
             }
         }
 
-        if(foundNode)
-        {
-            boolean foundLink = false;
-            Iterator<Link> itLink = currentNode.getNeighbours().iterator();
-            Link followLink = null;
-
-            while(itLink.hasNext() && !foundLink) {
-                Link link = itLink.next();
-
-                double direction = link.getAngle();
-                if(direction == this.currentDirection)
-                {
-                    followLink = link;
-                    foundLink = true;
-                }
-            }
-
-            if(foundLink) {
-                //Destination location (look direction) is opposite of absolute drive in direction
-                this.destinationDirection = followLink.getAngle() + 180;
-
-                this.destinationLocation = followLink.getEndPoint().getId();
-                this.destinationDistance = followLink.getWeight(); // FIXME should be length!
-
-                this.followLine = true;
-            }
-            else
-                this.onMap = false; //Could not find destination, going off road
+        if(futureLink == null) {
+            System.out.println("Couldn find a direction to follow line!");
+            this.onMap = false;
+            return;
         }
-        else
-            this.onMap = false; //Could not find node
 
-        return;
+        this.destinationDistance = futureLink.getLength();
+        this.destinationLocation = futureLink.getEndPoint();
     }
 
     /**
@@ -241,18 +211,8 @@ public class LocationHandler
         if(followLine)
         {
             this.currentLocation = this.destinationLocation;
-            this.currentDirection = this.destinationDirection;
             this.followLine = false;
         }
-    }
-
-    /**
-     * Rotates vehicle with specified angle and sets the current direction based on that
-     * @param angle Angle to rotate
-     */
-    public void turn(double angle)
-    {
-        this.currentDirection += ((int)angle) % 360;
     }
 
 
@@ -270,5 +230,25 @@ public class LocationHandler
         map = responseMap.getBody();
 
         return map;
+    }
+
+    // search point by id
+    private Point findPointById(long id) {
+        Node node =findNodeByPointId(id);
+        if(node != null) return node.getPointEntity();
+        else return null;
+    }
+
+    // search node by it's contained point id
+    private Node findNodeByPointId(long pid) {
+        List<Node> nodes = map.getNodeList();
+
+        for(Node node : nodes) {
+            Point point = node.getPointEntity();
+            long currentId = point.getId();
+            if(currentId == pid) return node;
+        }
+
+        return null;
     }
 }

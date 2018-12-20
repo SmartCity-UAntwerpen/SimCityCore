@@ -150,9 +150,6 @@ public class DriveHandler
             if(driveCommand.getType() == Event.EventType.DRIVE_EVENT) {
 
                 if(driveCommand.getProperty().equals("TURNING")) {
-
-                    this.locationHandler.turn((float)driveCommand.getValue());
-
                     //Total turning distance for wheel
                     this.targetPosition = Math.abs((float)driveCommand.getValue())*MMRD/MMPD;
                 }
