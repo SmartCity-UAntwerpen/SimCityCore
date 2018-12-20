@@ -197,21 +197,34 @@ public class LocationHandler
         this.destinationLocation = futureLink.getEndPoint();
     }
 
-    /**
-     * Ends line following, arrived at destination
-     */
-    public void endFollowLine()
-    {
-        if(map == null)
-            return;//No map loaded
+    public void updatePosTurn(float angle) {
+        Node currentNode = findNodeByPointId(currentLocation.getId());
+        if(currentNode == null) return;
 
-        if(followLine)
-        {
-            this.currentLocation = this.destinationLocation;
-            this.followLine = false;
+        for(Link link: currentNode.getNeighbours()) {
+            if((link.getAngle() == angle) && (currentLocation.getId().equals(link.getStartPoint().getId()))) {
+                // Link angle is correct and we are at the start of it
+                // Theoretically, the robot could drive in the wrong direction. This is not implemented
+                destinationLocation = link.getEndPoint();
+                return;
+            }
         }
+        System.out.println("Error finding link for turn command.");
     }
 
+    public void updatePosDrive() {
+        // we assume the robot is driving to the following point
+        // This is equivalent to the turn command with an angle of 0
+        updatePosTurn(0);
+    }
+
+    /**
+     *   Arrived at destination
+     */
+    public void drivingDone() {
+        this.currentLocation = this.destinationLocation;
+        this.followLine = false;
+    }
 
     /**
      * Gets map from Robot Backend

@@ -152,10 +152,12 @@ public class DriveHandler
                 if(driveCommand.getProperty().equals("TURNING")) {
                     //Total turning distance for wheel
                     this.targetPosition = Math.abs((float)driveCommand.getValue())*MMRD/MMPD;
+                    locationHandler.updatePosTurn((float) driveCommand.getValue());
                 }
                 else if(driveCommand.getProperty().equals("DRIVING")) {
                     //Total turning angle for the wheels
                     this.targetPosition = (float)driveCommand.getValue()/MMPD;
+                    locationHandler.updatePosDrive();
                 }
                 else
                     return false; //Unknown command
