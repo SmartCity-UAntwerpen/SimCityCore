@@ -5,6 +5,7 @@ import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
+import be.uantwerpen.sc.services.MapService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,7 @@ public class LocationHandler
     private double destinationDistance;
 
     private static Map map = null;
-
-    /**
-     * Backend IP
-     */
-    private String robotBackendIP;
-    /**
-     * Backend Port
-     */
-    private int robotBackendPort;
+    private MapService mapService;
 
     public LocationHandler()
     {
@@ -43,9 +36,7 @@ public class LocationHandler
 
         //Get values from spring
         ApplicationContext context =  SpringContext.getAppContext();
-        this.robotBackendIP = context.getEnvironment().getProperty("robotbackend.ip");
-        String portString = context.getEnvironment().getProperty("robotbackend.port");
-        this.robotBackendPort = Integer.parseInt(portString);
+        this.mapService = context.getBean(MapService.class);
     }
 
     /**
@@ -56,7 +47,7 @@ public class LocationHandler
     public boolean initLocationHandler(int startPosition)
     {
         try {
-            if(map == null) map = this.getMap(); // only load if not initialized
+            map = mapService.getMap();
         }
         catch(Exception e) {
             System.err.println("Could not connect to SmartCity Core for map!");
@@ -207,22 +198,6 @@ public class LocationHandler
      */
     public void drivingDone() {
         this.currentLocation = this.destinationLocation;
-    }
-
-    /**
-     * Gets map from Robot Backend
-     * @return received map
-     */
-    private Map getMap()
-    {
-        RestTemplate template = new RestTemplate();
-        ResponseEntity<Map> responseMap;
-        Map map;
-
-        responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
-        map = responseMap.getBody();
-
-        return map;
     }
 
     // search point by id
