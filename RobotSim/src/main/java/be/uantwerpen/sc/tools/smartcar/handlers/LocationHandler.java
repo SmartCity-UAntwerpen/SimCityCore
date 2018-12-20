@@ -25,8 +25,6 @@ public class LocationHandler
     private double destinationDistance;
 
     private static Map map = null;
-    private boolean onMap;
-    private boolean followLine;
 
     /**
      * Backend IP
@@ -42,8 +40,6 @@ public class LocationHandler
         this.currentLocation = null;
         this.destinationLocation = null;
         this.destinationDistance = 0L;
-        this.onMap = false;
-        this.followLine = false;
 
         //Get values from spring
         ApplicationContext context =  SpringContext.getAppContext();
@@ -99,19 +95,8 @@ public class LocationHandler
             return false;
         }
 
-        this.onMap = true;
 
         return true;
-    }
-
-    public void removedFromMap()
-    {
-        this.onMap = false;
-    }
-
-    public boolean onMap()
-    {
-        return this.onMap;
     }
 
     /**
@@ -188,8 +173,7 @@ public class LocationHandler
         }
 
         if(futureLink == null) {
-            System.out.println("Couldn find a direction to follow line!");
-            this.onMap = false;
+            System.out.println("Couldn't find a direction to follow line!");
             return;
         }
 
@@ -223,7 +207,6 @@ public class LocationHandler
      */
     public void drivingDone() {
         this.currentLocation = this.destinationLocation;
-        this.followLine = false;
     }
 
     /**
