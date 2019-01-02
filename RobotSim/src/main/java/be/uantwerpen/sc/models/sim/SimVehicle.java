@@ -1,16 +1,10 @@
 package be.uantwerpen.sc.models.sim;
 
-import be.uantwerpen.rc.models.map.Map;
-import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
-import be.uantwerpen.rc.models.map.Tile;
 import be.uantwerpen.sc.configurations.SpringContext;
-import be.uantwerpen.sc.services.MapService;
+import be.uantwerpen.sc.services.mapService.MapService;
 import org.springframework.context.ApplicationContext;
-import org.w3c.dom.NodeList;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Queue;
 
 /**

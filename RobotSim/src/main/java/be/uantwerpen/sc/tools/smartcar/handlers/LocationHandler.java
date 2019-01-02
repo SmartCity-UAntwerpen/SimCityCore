@@ -5,13 +5,9 @@ import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
-import be.uantwerpen.sc.services.MapService;
-import org.springframework.beans.factory.annotation.Value;
+import be.uantwerpen.sc.services.mapService.MapService;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 

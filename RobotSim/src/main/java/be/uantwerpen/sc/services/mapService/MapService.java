@@ -1,4 +1,4 @@
-package be.uantwerpen.sc.services;
+package be.uantwerpen.sc.services.mapService;
 
 import be.uantwerpen.rc.models.map.Map;
 import be.uantwerpen.rc.models.map.Node;
@@ -16,25 +16,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
-@Service
-public class MapService {
+public abstract class MapService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MapService.class);
+    protected static final Logger logger = LoggerFactory.getLogger(MapService.class);
 
     private Map map;
 
     private Queue<Point> startPoints;
-
-    /**
-     * Backend IP
-     */
-    @Value("${robotbackend.ip}")
-    private String robotBackendIP;
-    /**
-     * Backend Port
-     */
-    @Value("#{new Integer(${robotbackend.port})}")
-    private int robotBackendPort;
 
     public MapService() {
         startPoints = new LinkedList<>();
@@ -52,22 +40,8 @@ public class MapService {
         startPoints.addAll(points);
     }
 
-    /**
-     * Gets map from Robot Backend
-     * @return received map
-     */
-    private Map loadMap()
-    {
-        RestTemplate template = new RestTemplate();
-        ResponseEntity<Map> responseMap;
-        Map map;
-
-        responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
-        map = responseMap.getBody();
-
-        logger.info("Map loaded OK");
-        return map;
-    }
+    // loading method depends on implementation
+    protected abstract Map loadMap();
 
     public Map getMap() {
         return map;
