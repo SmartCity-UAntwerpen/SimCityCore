@@ -20,7 +20,7 @@ public class MapServiceMock extends MapService {
 
     public MapServiceMock() {
         super();
-        logger.info("Running with mocked MapService. Data will be inaccurate!");
+        logger.warn("Running with mocked MapService. Data will be inaccurate!");
     }
 
     @Override
@@ -29,9 +29,11 @@ public class MapServiceMock extends MapService {
 
         Tile tile = new Tile();
         tile.setType("end");
+        tile.setLocked(false);
 
         Point point = new Point();
         point.setTile(tile);
+        point.setId(1L);
 
         Node node = new Node();
         node.setPointEntity(point);

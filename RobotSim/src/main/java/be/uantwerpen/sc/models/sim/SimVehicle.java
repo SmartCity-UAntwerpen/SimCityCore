@@ -73,7 +73,8 @@ public abstract class SimVehicle extends SimBot
                     }
                 }
                 catch(Exception e) {
-                    throw new Exception("Could not parse value for start point setting! " + e.getMessage());
+                    e.printStackTrace();
+                    throw new Exception("Could not parse value for start point setting! ");
                 }
             default:
                 return false;
