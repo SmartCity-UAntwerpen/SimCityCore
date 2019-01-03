@@ -1,9 +1,6 @@
 package be.uantwerpen.sc.services.mapService;
 
-import be.uantwerpen.rc.models.map.Map;
-import be.uantwerpen.rc.models.map.Node;
-import be.uantwerpen.rc.models.map.Point;
-import be.uantwerpen.rc.models.map.Tile;
+import be.uantwerpen.rc.models.map.*;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +32,16 @@ public class MapServiceMock extends MapService {
         point.setTile(tile);
         point.setId(1L);
 
+        Link link = new Link();
+        link.setLength(10);
+        link.setStartPoint(point);
+        List<Link> neighbours = new ArrayList<>();
+        neighbours.add(new Link());
+
         Node node = new Node();
         node.setPointEntity(point);
+        node.setNodeId(1L);
+        node.setNeighbours(neighbours);
 
         List<Node> nodeList = new ArrayList<>();
         nodeList.add(node);
@@ -46,4 +51,5 @@ public class MapServiceMock extends MapService {
 
         return map;
     }
+
 }
