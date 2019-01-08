@@ -19,8 +19,9 @@ public class SimFactory {
     @Value("#{new Integer(${robotbackend.port})}")
     int robotBackendPort;
 
-    public SimCar createSimCar() {
+    public SimCar createSimCar(long id) {
         SimCar car = new SimCar();
+        car.setId(id);
         car.setRobotBackendIP(robotBackendIP);
         car.setRobotBackendPort(robotBackendPort);
 

@@ -15,7 +15,7 @@ public abstract class SimBot implements Runnable
     /**
      * Bot ID
      */
-    protected int id;
+    protected long id = 1L;
 
     /**
      * Bot Type
@@ -180,6 +180,14 @@ public abstract class SimBot implements Runnable
 
     public void setRobotBackendPort(int robotBackendPort) {
         this.robotBackendPort = robotBackendPort;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     abstract protected void simulationProcess();

@@ -20,6 +20,7 @@ public class LocationHandler
     private Point currentLocation;
     private Point destinationLocation;
     private double destinationDistance;
+    private boolean driving = false;
 
     private static Map map = null;
     private MapService mapService;
@@ -75,7 +76,7 @@ public class LocationHandler
             this.destinationLocation = startNode.getNeighbours().get(0).getEndPoint();
             this.destinationDistance = startNode.getNeighbours().get(0).getLength();
 
-            this.currentLocation = findPointById(startPosition);
+            this.currentLocation = startNode.getPointEntity();
         }
         else {
             System.err.println("Could not find start position for id " + startPosition + "!");
@@ -93,7 +94,8 @@ public class LocationHandler
     public boolean onNode()
     {
         if(currentLocation == null) return false;
-        else return currentLocation.getId().equals(destinationLocation.getId());
+        else if(driving) return false; // we are not stopped on a node
+        else return true; // we are stopped on a node
     }
 
     /**
@@ -164,6 +166,7 @@ public class LocationHandler
             return;
         }
 
+        driving = true;
         this.destinationDistance = futureLink.getLength();
         this.destinationLocation = futureLink.getEndPoint();
     }
@@ -177,6 +180,7 @@ public class LocationHandler
                 // Link angle is correct and we are at the start of it
                 // Theoretically, the robot could drive in the wrong direction. This is not implemented
                 destinationLocation = link.getEndPoint();
+                driving = true;
                 return;
             }
         }
@@ -193,6 +197,7 @@ public class LocationHandler
      *   Arrived at destination
      */
     public void drivingDone() {
+        driving = false;
         this.currentLocation = this.destinationLocation;
     }
 

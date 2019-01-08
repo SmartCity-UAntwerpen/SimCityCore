@@ -151,7 +151,7 @@ public class SimDeployerService implements TCPListener {
      */
     private boolean createVehicle(long simulationID){
         if (!simulatedVehicles.containsKey(simulationID)) {
-            SimCar newCar = simFactory.createSimCar();
+            SimCar newCar = simFactory.createSimCar(simulationID);
             simulatedVehicles.put(simulationID, newCar);
             logger.info("New simulated vehicle registered with simulation ID " + simulationID + ".");
             //Log.logInfo("SIMDEPLOYER", "New simulated vehicle registered with simulation ID " + simulationID + ".");

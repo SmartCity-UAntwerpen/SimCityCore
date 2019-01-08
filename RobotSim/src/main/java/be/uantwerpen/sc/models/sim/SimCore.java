@@ -164,7 +164,7 @@ public class SimCore
             //Start new log section
             log = log.concat("\n------------------- New log - " + dateFormat.format(new Date()) + " -------------------\n");
 
-            while(!Thread.currentThread().isInterrupted() && !logLine.startsWith("#"))
+            while(!Thread.currentThread().isInterrupted() && !logLine.startsWith("SmartCar Core")) // wait until initialized
             {
                 try {
                     logLine = readLine(reader);
@@ -201,6 +201,7 @@ public class SimCore
                 }
             }
 
+            System.out.println("Car core initialized. Status: running");
             status = SimStatus.RUNNING;
 
             try
@@ -338,7 +339,7 @@ public class SimCore
         }
 
         if(line[0] != null) {
-            System.out.println("Core: "+line[0]);
+            System.out.println("-Core: "+line[0]);
         }
 
         return line[0];

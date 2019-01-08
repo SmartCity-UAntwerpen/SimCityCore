@@ -42,13 +42,14 @@ public class SimCar extends SimVehicle
         List<String> coreArguments = new ArrayList<String>();
 
         //Create core process arguments
+        //set id to register with backend
+        coreArguments.add("-Dcar.id="+generateCoreId()); //FIXME set correct property name
         //Setup ports to simulated C-Core
-        coreArguments.add("-Dcar.ccore.taskport=" + this.taskSocketService.getListeningPort());
-        coreArguments.add("-Dcar.ccore.eventport=" + this.eventSocketService.getListeningPort());
+        coreArguments.add("-Dcar.driver.ip=localhost");
+        coreArguments.add("-Dcar.driver.taskport=" + this.taskSocketService.getListeningPort());
+        coreArguments.add("-Dcar.driver.eventport=" + this.eventSocketService.getListeningPort());
         //Select random free port
         coreArguments.add("-Dserver.port=0");
-       //TODO Why both? coreArguments.add("-Dsc.core.ip=143.129.39.151");
-       //TODO Why both? coreArguments.add("-Dsc.core.port=1994");
         coreArguments.add("-Dsc.core.ip="+ this.robotBackendIP);
         coreArguments.add("-Dsc.core.port=" + String.valueOf(this.robotBackendPort));
 
@@ -117,6 +118,13 @@ public class SimCar extends SimVehicle
 
         if(!carSimulation.stopSimulation())
             Log.logSevere("SIMCAR", "Simulation layer is not stopped properly!");
+    }
+
+    private String generateCoreId() {
+        // use sim frontend id to prevent conflict with multiple workers
+
+        long backendId = this.id + 100; // offset id to prevent conflict with real car
+        return String.valueOf(backendId);
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.logging.Level;
 // TIP change working dir field to empty in run configuration
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles("mocks,dev")
+@ActiveProfiles("dev")
 @SpringApplicationConfiguration(classes = SimCityApplication.class)
 @Ignore
 public class SimBotIntegrationTest {
@@ -30,8 +30,8 @@ public class SimBotIntegrationTest {
         // fix problem ith strange logger implementation
         new Log(this.getClass(), Level.CONFIG);
 
-        SimCar car = factory.createSimCar();
-        car.setStartPoint(1);
+        SimCar car = factory.createSimCar(1L);
+        car.setStartPoint(10);
         car.start();
 
         // keep test running
