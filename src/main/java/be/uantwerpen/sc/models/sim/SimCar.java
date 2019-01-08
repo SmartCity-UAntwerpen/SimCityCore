@@ -43,7 +43,7 @@ public class SimCar extends SimVehicle
 
         //Create core process arguments
         //set id to register with backend
-        coreArguments.add("-Dcar.id="+generateCoreId()); //FIXME set correct property name
+        coreArguments.add("-Drobot.id="+generateCoreId());
         //Setup ports to simulated C-Core
         coreArguments.add("-Dcar.driver.ip=localhost");
         coreArguments.add("-Dcar.driver.taskport=" + this.taskSocketService.getListeningPort());
