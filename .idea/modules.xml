@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/RobotSim/RobotSim.iml" filepath="$PROJECT_DIR$/RobotSim/RobotSim.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SmartCity Common/SmartCity Common.iml" filepath="$PROJECT_DIR$/SmartCity Common/SmartCity Common.iml" />
-    </modules>
-  </component>
-</project>

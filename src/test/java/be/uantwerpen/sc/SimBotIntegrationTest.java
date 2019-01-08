@@ -19,7 +19,7 @@ import java.util.logging.Level;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("dev")
 @SpringApplicationConfiguration(classes = SimCityApplication.class)
-@Ignore
+//@Ignore
 public class SimBotIntegrationTest {
 
     @Autowired
