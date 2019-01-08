@@ -27,12 +27,17 @@ public class SimBotIntegrationTest {
 
     @Test
     public void startSim() throws Exception{
+        System.out.println("Starting test...");
         // fix problem ith strange logger implementation
         new Log(this.getClass(), Level.CONFIG);
 
+        Thread.sleep(500); // wait for application load
+
         SimCar car = factory.createSimCar(1L);
+        System.out.println("Car created");
         car.setStartPoint(10);
         car.start();
+        System.out.println("Car started");
 
         // keep test running
         while(car.isRunning()) {

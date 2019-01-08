@@ -1,12 +1,16 @@
 package be.uantwerpen.sc.tools.smartcar.handlers;
 
 import be.uantwerpen.sc.services.sockets.SimSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Thomas on 28/05/2016.
  */
 public class TaskHandler
 {
+    private static final Logger logger = LoggerFactory.getLogger(TaskHandler.class);
+
     private DriveHandler driveHandler;
     private EventHandler eventHandler;
     private LocationHandler locationHandler;
@@ -44,6 +48,8 @@ public class TaskHandler
         if(message.length() <= 0) {
             return; //Empty message
         }
+
+        logger.info("Task received: "+message);
 
         String task = message.split(" ")[0].trim();
 

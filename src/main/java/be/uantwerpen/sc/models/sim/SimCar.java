@@ -108,8 +108,8 @@ public class SimCar extends SimVehicle
             carSimulation.updateSimulation(elapsedTime);
 
             try {
-                //Sleep simulation for 10 ms (simulation resolution > 10 ms)
-                Thread.sleep(10);
+                //Sleep simulation for 100 ms (simulation resolution > 100 ms)
+                Thread.sleep(100);
             }
             catch(Exception e) {
                 //Thread is interrupted

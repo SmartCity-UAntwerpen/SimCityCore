@@ -1,6 +1,8 @@
 package be.uantwerpen.sc.tools.smartcar.handlers;
 
 import be.uantwerpen.sc.services.sockets.SimSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -10,6 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class EventHandler
 {
+    private static final Logger logger = LoggerFactory.getLogger(EventHandler.class);
+
     private Queue<Object> events;
 
     public EventHandler()
@@ -33,6 +37,7 @@ public class EventHandler
         {
             String event = (String)this.events.poll();
 
+            logger.info("Sending event: "+event);
             socket.sendMessage(event + "\r\n");
         }
 

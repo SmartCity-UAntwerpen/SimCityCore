@@ -6,6 +6,8 @@ import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
 import be.uantwerpen.sc.services.mapService.MapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Iterator;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 public class LocationHandler
 {
+    private static final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
+
     private Point currentLocation;
     private Point destinationLocation;
     private double destinationDistance;
@@ -140,12 +144,13 @@ public class LocationHandler
     // Hoofdtaak is bepalen over welke afstand de lijn doorloopt
     public void startFollowLine()
     {
+        logger.info("Starting followline command");
         if(map == null)
             return; //No map loaded
 
         Node currentNode = findNodeByPointId(currentLocation.getId());
         if(currentNode == null) {
-            System.err.println("Couldn't find node for point!");
+            logger.warn("Couldn't find node for point!");
             return;
         }
         Iterator<Link> linkIt = currentNode.getNeighbours().iterator();
@@ -155,16 +160,18 @@ public class LocationHandler
         while(linkIt.hasNext() && futureLink == null) {
             Link link = linkIt.next();
 
-            if(link.getStartPoint().equals(currentLocation)) {
+            if(link.getStartPoint().getId().equals(currentLocation.getId())) {
                 //Link has correct direction
                 futureLink = link;
             }
         }
 
         if(futureLink == null) {
-            System.out.println("Couldn't find a direction to follow line!");
+            logger.warn("Couldn't find a direction to follow line!");
             return;
         }
+
+        logger.info("following link from "+futureLink.getStartPoint().getId()+" to "+futureLink.getEndPoint().getId()+" over distance "+futureLink.getLength());
 
         driving = true;
         this.destinationDistance = futureLink.getLength();
@@ -180,11 +187,14 @@ public class LocationHandler
                 // Link angle is correct and we are at the start of it
                 // Theoretically, the robot could drive in the wrong direction. This is not implemented
                 destinationLocation = link.getEndPoint();
+                destinationDistance = link.getLength();
                 driving = true;
+
+                logger.info("Driving distance "+destinationDistance+" with angle "+angle+" to point "+destinationLocation.getId());
                 return;
             }
         }
-        System.out.println("Error finding link for turn command.");
+        logger.warn("Error finding link for turn command with angle "+angle+"° at point "+currentLocation.getId());
     }
 
     public void updatePosDrive() {
@@ -197,8 +207,10 @@ public class LocationHandler
      *   Arrived at destination
      */
     public void drivingDone() {
+        logger.info("Driving command completed");
         driving = false;
         this.currentLocation = this.destinationLocation;
+        this.destinationDistance = 0;
     }
 
     // search point by id
