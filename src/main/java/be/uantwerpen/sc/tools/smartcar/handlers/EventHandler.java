@@ -37,8 +37,8 @@ public class EventHandler
         {
             String event = (String)this.events.poll();
 
-            logger.info("Sending event: "+event);
-            socket.sendMessage(event + "\r\n");
+            boolean success =  socket.sendMessage(event + "\r\n");
+            if(!success) logger.error("Error while sending event! "+event);
         }
 
         //Read socket to verify if its still alive

@@ -1,5 +1,8 @@
 package be.uantwerpen.sc.tools.smartcar.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -8,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class DriveHandler
 {
+    private static final Logger logger = LoggerFactory.getLogger(DriveHandler.class);
+
     private float speed;
     private float currentPosition;
     private float targetPosition;
@@ -96,6 +101,9 @@ public class DriveHandler
      */
     public boolean updatePosition(double elapsedTime)
     {
+
+        if(!driving) return false; // if position was already reached we do not dispatch event
+
         //Speed --> distance/s
         double rotation = ((Math.abs(speed)/1000) * elapsedTime)/MMPD;
 
@@ -105,20 +113,14 @@ public class DriveHandler
             rotation = -rotation;
         }
 
-        if(Math.abs(this.currentPosition) >= Math.abs(this.targetPosition))
-        {
-            driving = false;
-
-            //Target position already reached
-            return false;
-        }
-
-        if(!paused && driving)
+        if(!paused)
         {
             if(Math.abs(this.currentPosition + rotation) >= Math.abs(this.targetPosition))
             {
                 this.currentPosition = this.targetPosition;
 
+                logger.info("Target position reached");
+                driving=false;
                 //Target position is reached
                 return true;
             }

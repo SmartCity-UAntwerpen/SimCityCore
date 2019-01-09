@@ -40,7 +40,7 @@ public class MapServiceMock extends MapService {
 
         Node node = new Node();
         node.setPointEntity(point);
-        node.setNodeId(1L);
+        node.setNodeId(10L);
         node.setNeighbours(neighbours);
 
         List<Node> nodeList = new ArrayList<>();

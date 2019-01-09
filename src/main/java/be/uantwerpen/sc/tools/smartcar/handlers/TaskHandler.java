@@ -49,7 +49,7 @@ public class TaskHandler
             return; //Empty message
         }
 
-        logger.info("Task received: "+message);
+        logger.trace("Task received: "+message);
 
         String task = message.split(" ")[0].trim();
 
@@ -101,6 +101,7 @@ public class TaskHandler
 
         if(command.startsWith("DRIVE ABORT"))
         {
+            logger.info("Drive command aborted");
             driveHandler.flushAllDriveTasks();
             driveHandler.abortDriving();
         }
@@ -110,6 +111,7 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE FOLLOWLINE"))
         {
+            logger.info("Follow line command received");
             if(command.split(" ", 3).length == 2)
             {
                 //Follow line until end of line
@@ -134,18 +136,21 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE PAUSE"))
         {
+            logger.info("Pausing drive command");
             driveHandler.setPaused(true);
 
             response = "ACK";
         }
         else if(command.startsWith("DRIVE RESUME"))
         {
+            logger.info("Resuming drive command");
             driveHandler.setPaused(false);
 
             response = "ACK";
         }
         else if(command.startsWith("DRIVE FORWARD"))
         {
+            logger.info("Drive forward received");
             try {
                 int distance = parseInteger(command.split(" ", 3)[2]);
                 driveHandler.newDriveDistanceCommand(distance);
@@ -158,6 +163,7 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE BACKWARDS"))
         {
+            logger.info("Drive backwards received");
             try {
                 int distance = parseInteger(command.split(" ", 3)[2]);
                 driveHandler.newDriveDistanceCommand(-distance);
@@ -170,6 +176,7 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE TURN"))
         {
+            logger.info("Drive turn command received");
             if(command.split(" ").length == 3)
             {
                 if(command.split(" ")[2].equals("L"))
@@ -226,6 +233,7 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE ROTATE"))
         {
+            logger.info("Drive ROTATE received");
             if(command.split(" ").length == 4)
             {
                 if(command.split(" ")[2].equals("L"))
@@ -272,6 +280,7 @@ public class TaskHandler
         }
         else if(command.startsWith("DRIVE DISTANCE"))
         {
+            logger.trace("Receive drive distance polling command");
             eventHandler.addEvent("TRAVEL DISTANCE EVENT: " + (int)driveHandler.getTravelledDistance());
 
             response = "ACK";

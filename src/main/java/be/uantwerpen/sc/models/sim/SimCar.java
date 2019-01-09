@@ -4,6 +4,9 @@ import be.uantwerpen.sc.models.sim.deployer.Log;
 import be.uantwerpen.sc.services.SimCoresService;
 import be.uantwerpen.sc.services.sockets.SimSocketService;
 import be.uantwerpen.sc.tools.smartcar.*;
+import be.uantwerpen.sc.tools.smartcar.handlers.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
  */
 public class SimCar extends SimVehicle
 {
+    private static final Logger logger = LoggerFactory.getLogger(SimCar.class);
 
     private SimCore carCore;
     private SimSocketService taskSocketService;
@@ -37,7 +41,10 @@ public class SimCar extends SimVehicle
         eventSocketServiceThread.start();
 
         //Wait for server sockets to initialise
+        logger.info("Initializing server sockets...");
+        // FIXME sometimes integration test hangs here
         while((this.taskSocketService.getListeningPort() == 0 || this.eventSocketService.getListeningPort() == 0) && this.isRunning());
+        logger.info("Socket initialisation done");
 
         List<String> coreArguments = new ArrayList<String>();
 

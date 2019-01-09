@@ -3,12 +3,10 @@ package be.uantwerpen.sc;
 import be.uantwerpen.sc.models.sim.SimCar;
 import be.uantwerpen.sc.models.sim.deployer.Log;
 import be.uantwerpen.sc.services.SimFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
