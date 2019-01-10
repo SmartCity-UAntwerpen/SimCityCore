@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class LocationHandler
     private Point destinationLocation;
     private double destinationDistance;
     private boolean driving = false;
+    private boolean followline = false;
+
+    private Point rollbackLocation;
+    private List<String> prevCommandBuffer;
 
     private static Map map = null;
     private MapService mapService;
@@ -34,6 +39,8 @@ public class LocationHandler
         this.currentLocation = null;
         this.destinationLocation = null;
         this.destinationDistance = 0L;
+        prevCommandBuffer = new ArrayList<>();
+        rollbackLocation = null;
 
         //Get values from spring
         ApplicationContext context =  SpringContext.getAppContext();
@@ -144,6 +151,20 @@ public class LocationHandler
     // Hoofdtaak is bepalen over welke afstand de lijn doorloopt
     public void startFollowLine()
     {
+        if(currentLocation.getTile().getType().equals("end"))
+                prevCommandBuffer.add("FOLLOWEND");
+        else {
+            prevCommandBuffer.add("FOLLOW");
+            if(detectStartSequence()) {
+                if(rollbackLocation == null) logger.warn("Cannot roll back location!");
+                else {
+                    logger.info("Rolling back to point "+rollbackLocation.getId());
+                    currentLocation =  rollbackLocation; // roll back to before start sequence
+                }
+            }
+        }
+        rollbackLocation = currentLocation;
+
         logger.info("Starting followline command");
         if(map == null)
             return; //No map loaded
@@ -176,9 +197,17 @@ public class LocationHandler
         driving = true;
         this.destinationDistance = futureLink.getLength();
         this.destinationLocation = futureLink.getEndPoint();
+        this.followline = true;
     }
 
     public void updatePosTurn(float angle) {
+        angle = -angle; // map and other parts of the simulator are vice versa :(
+
+        if(!(currentLocation.getTile().getType().equals("crossing") || followline )) {
+            logger.info("Drive command ignored");
+            return; // Ignore manual drive commands except for crossing or line following
+        }
+
         Node currentNode = findNodeByPointId(currentLocation.getId());
         if(currentNode == null) return;
 
@@ -198,6 +227,8 @@ public class LocationHandler
     }
 
     public void updatePosDrive() {
+        prevCommandBuffer.add("FORWARD");
+
         // we assume the robot is driving to the following point
         // This is equivalent to the turn command with an angle of 0
         updatePosTurn(0);
@@ -211,6 +242,7 @@ public class LocationHandler
         driving = false;
         this.currentLocation = this.destinationLocation;
         this.destinationDistance = 0;
+        this.followline = false;
     }
 
     // search point by id
@@ -232,4 +264,27 @@ public class LocationHandler
 
         return null;
     }
+
+    /**
+     * Detect sequence at start of job which lead to a single followline
+     */
+    private boolean detectStartSequence() {
+        if(prevCommandBuffer.size() < 4) return false; // minimum 3 commands
+
+        boolean success = true;
+
+        logger.info("Command buffer: "+prevCommandBuffer);
+
+        if (!prevCommandBuffer.get(0).equals("FOLLOWEND")) success = false;
+        if (!prevCommandBuffer.get(1).equals("FORWARD")) success = false; // this forward command is the result of the followline
+        if (!prevCommandBuffer.get(2).equals("FORWARD")) success = false;
+        if (!prevCommandBuffer.get(3).equals("FOLLOW")) success = false;
+
+        if (success) logger.info("Start sequence detected!");
+
+        prevCommandBuffer.clear();
+
+        return success;
+    }
+
 }

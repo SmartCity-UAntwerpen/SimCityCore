@@ -159,7 +159,7 @@ public class DriveHandler
                 else if(driveCommand.getProperty().equals("DRIVING")) {
                     //Total turning angle for the wheels
                     this.targetPosition = (float)driveCommand.getValue()/MMPD;
-                    locationHandler.updatePosDrive();
+                    if(targetPosition > 0) locationHandler.updatePosDrive(); // Ignore backwards for now
                 }
                 else
                     return false; //Unknown command
