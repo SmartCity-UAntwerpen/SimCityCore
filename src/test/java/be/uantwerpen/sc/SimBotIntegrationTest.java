@@ -29,11 +29,10 @@ public class SimBotIntegrationTest {
         // fix problem ith strange logger implementation
         new Log(this.getClass(), Level.CONFIG);
 
-        Thread.sleep(500); // wait for application load
-
         SimCar car = factory.createSimCar(1L);
         System.out.println("Car created");
         car.setStartPoint(10);
+        Thread.sleep(1000); // wait for application load
         car.start();
         System.out.println("Car started");
 

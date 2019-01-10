@@ -86,6 +86,11 @@ public class TaskHandler
                 break;
         }
 
+        //extra logging
+        if(!response.equals("ACK")) {
+            logger.warn("Response to command "+message+" is "+response);
+        }
+
         //Send response
         socket.sendMessage(response + "\r\n# ");
     }
@@ -325,7 +330,7 @@ public class TaskHandler
     {
         int parsedInt;
         try {
-            parsedInt = Integer.parseInt(value);
+            parsedInt = (int) Double.parseDouble(value); //allow double values but truncate to int
         }
         catch(NumberFormatException e) {
             throw new Exception("'" + value + "' is not an integer value!");

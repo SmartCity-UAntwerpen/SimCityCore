@@ -45,10 +45,14 @@ public class SimCar extends SimVehicle
         // FIXME sometimes integration test hangs here
         while((this.taskSocketService.getListeningPort() == 0 || this.eventSocketService.getListeningPort() == 0) && this.isRunning());
         logger.info("Socket initialisation done");
+        logger.info("Tasksocket port: "+taskSocketService.getListeningPort());
+        logger.info("Eventsocket port: "+eventSocketService.getListeningPort());
 
         List<String> coreArguments = new ArrayList<String>();
 
         //Create core process arguments
+        // increase logging level
+        coreArguments.add("-Dlogging.level.root=ALL");
         //set id to register with backend
         coreArguments.add("-Drobot.id="+generateCoreId());
         //Setup ports to simulated C-Core
