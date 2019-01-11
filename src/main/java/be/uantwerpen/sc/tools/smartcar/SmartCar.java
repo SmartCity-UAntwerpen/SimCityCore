@@ -26,7 +26,8 @@ public class SmartCar
         this.name = "SimBot";
 
         this.eventHandler = new EventHandler();
-        this.locationHandler = new LocationHandler();
+        //this.locationHandler = new LocationHandler();
+        this.locationHandler = new SimpleLocationHandler();
         this.driveHandler = new DriveHandler(70, locationHandler);
         this.tagReaderHandler = new TagReaderHandler(locationHandler);
         this.taskHandler = new TaskHandler(driveHandler, eventHandler, locationHandler, tagReaderHandler);

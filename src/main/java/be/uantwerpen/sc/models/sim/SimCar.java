@@ -51,8 +51,6 @@ public class SimCar extends SimVehicle
         List<String> coreArguments = new ArrayList<String>();
 
         //Create core process arguments
-        // increase logging level
-        coreArguments.add("-Dlogging.level.root=ALL");
         //set id to register with backend
         coreArguments.add("-Drobot.id="+generateCoreId());
         //Setup ports to simulated C-Core

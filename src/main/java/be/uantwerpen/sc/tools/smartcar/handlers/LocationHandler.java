@@ -20,13 +20,13 @@ import java.util.List;
  */
 public class LocationHandler
 {
-    private static final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
+    protected static final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
 
     private Point currentLocation;
     private Point destinationLocation;
-    private double destinationDistance;
-    private boolean driving = false;
-    private boolean followline = false;
+    protected double destinationDistance;
+    protected boolean driving = false;
+    protected boolean followline = false;
 
     private Point rollbackLocation;
     private List<String> prevCommandBuffer;
