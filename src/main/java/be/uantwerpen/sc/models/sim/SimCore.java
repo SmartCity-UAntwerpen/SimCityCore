@@ -122,6 +122,10 @@ public class SimCore
             processCommands.add(coreLocation);
             processBuilder.command(processCommands);
 
+            //Uncomment these lines to test with core in IDE
+            //status = SimStatus.RUNNING;
+            //while(!Thread.currentThread().isInterrupted());
+
             status = SimStatus.BOOT;
 
             Process process;

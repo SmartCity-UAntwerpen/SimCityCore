@@ -3,6 +3,7 @@ package be.uantwerpen.sc;
 import be.uantwerpen.sc.models.sim.SimCar;
 import be.uantwerpen.sc.models.sim.deployer.Log;
 import be.uantwerpen.sc.services.SimFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.logging.Level;
 
 // TIP change working dir field to empty in run configuration
+// Remove @Ignore annotation to run this, add before building with maven
+
+/**
+ * Creates a car and runs it. Useful to test the simulation logic
+ */
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("dev")
 @SpringApplicationConfiguration(classes = SimCityApplication.class)
-//@Ignore
+@Ignore
 public class SimBotIntegrationTest {
 
     @Autowired
