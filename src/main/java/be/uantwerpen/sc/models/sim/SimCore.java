@@ -1,8 +1,6 @@
 package be.uantwerpen.sc.models.sim;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -144,6 +142,10 @@ public class SimCore
                 return;
             }
 
+            // Get stdin of JAR = outputstream of our app
+            OutputStream stdin = process.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin));
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String logLine = "";
@@ -211,7 +213,17 @@ public class SimCore
             //Send shutdown signal to process
             status = SimStatus.SHUTDOWN;
 
-            process.destroy();
+            System.out.println("Shutting down simulation");
+            try {
+                // send exit command for clean shutdown
+                writer.write("exit\n");
+                writer.flush();
+            } catch (IOException e) {
+                System.err.println("Could not send shutdown command. Force shutdown.");
+                process.destroy();
+                e.printStackTrace();
+            }
+
             //Reset cached lines
             logLine = "";
             errorLine = "";
@@ -256,6 +268,7 @@ public class SimCore
                 System.err.println("Could not close error stream!");
             }
 
+            System.out.println("Simulation stopped");
             status = SimStatus.OFF;
             running = false;
         }
