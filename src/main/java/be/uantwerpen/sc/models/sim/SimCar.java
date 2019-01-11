@@ -42,7 +42,6 @@ public class SimCar extends SimVehicle
 
         //Wait for server sockets to initialise
         logger.info("Initializing server sockets...");
-        // FIXME sometimes integration test hangs here
         while((this.taskSocketService.getListeningPort() == 0 || this.eventSocketService.getListeningPort() == 0) && this.isRunning());
         logger.info("Socket initialisation done");
         logger.info("Tasksocket port: "+taskSocketService.getListeningPort());
@@ -52,6 +51,7 @@ public class SimCar extends SimVehicle
 
         //Create core process arguments
         //set id to register with backend
+        coreArguments.add("-Dmqtt.ip=broker.hivemq.com");
         coreArguments.add("-Drobot.id="+generateCoreId());
         //Setup ports to simulated C-Core
         coreArguments.add("-Dcar.driver.ip=localhost");

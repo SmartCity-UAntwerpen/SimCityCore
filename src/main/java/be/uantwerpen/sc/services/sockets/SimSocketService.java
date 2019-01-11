@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class SimSocketService implements Runnable
 {
-    private int socketPort;
+    private volatile int socketPort;
     private List<SimSocket> sockets;
     private ServerSocket serverSocket;
 
