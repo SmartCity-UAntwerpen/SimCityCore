@@ -50,8 +50,11 @@ public class SimCar extends SimVehicle
         List<String> coreArguments = new ArrayList<String>();
 
         //Create core process arguments
-        //set id to register with backend
+        //Useful options for debugging
+        //coreArguments.add("-Dlogging.level.be.uantwerpen=DEBUG");
         //coreArguments.add("-Dmqtt.ip=broker.hivemq.com");
+
+        //set id to register with backend
         coreArguments.add("-Drobot.id="+generateCoreId());
         //Setup ports to simulated C-Core
         coreArguments.add("-Dcar.driver.ip=localhost");
