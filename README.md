@@ -4,9 +4,10 @@ RobotSim repository - RobotSim (used for simulation of the robots)
 This RobotSim repository contains a RobotSim project. 
 This project is responsible for communicating with the SimCity frontend and for dispatching the robot JARs.
 In fact, we can think of this module as a deployer module for simulated robots.
-Communication to the SimCity front-end is established through TCP sockets; this RobotSim project works analogous to the drone and F1 cores, when it comes to receiving simulation commands over TCP.
+Communication to the SimCity front-end is established through TCP sockets; this RobotSim project works analogous to the  F1 cores, when it comes to receiving simulation commands over TCP.  
 
-NOTE: The robot simulation has not been updated for the current version of our project and therefore does not use our new backbone (SmartCity Core) but still communicates with the elder implementation found in the SmartCity Core module in the SmartCityProject repository.
+It communicates with the RobotBackend to get the map, which is necessary for the simulation. A simple mock for the mapService is available, which can be enabled by adding the profile ``mocks`` to the run configuration.  
+The JAR-file of the robotCore is not included en needs to be built from it's own project and put in the project root-directory.
 
 Developed by
 ============
