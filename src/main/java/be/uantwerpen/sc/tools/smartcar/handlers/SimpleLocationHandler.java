@@ -8,7 +8,7 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
  */
 public class SimpleLocationHandler extends LocationHandler {
 
-    private boolean rfidUsed = false;
+    private boolean hasMoved = false;
 
     public SimpleLocationHandler() {
         super();
@@ -18,11 +18,11 @@ public class SimpleLocationHandler extends LocationHandler {
     public void startFollowLine() {
         this.destinationDistance = 300; // we assume the length of 1 tile
         this.driving = true;
+        this.hasMoved = true;
     }
 
     public String getNodeRFID(int nodeID) {
-        if(!rfidUsed) {
-            rfidUsed = true;
+        if(!hasMoved) {
             return super.getNodeRFID(nodeID);
         }
         else {
@@ -33,10 +33,12 @@ public class SimpleLocationHandler extends LocationHandler {
     }
 
     public void updatePosTurn(float angle)  {
+        hasMoved = true;
         // Do nothing. Result isn't used directly
     }
 
     public void updatePosDrive() {
+        hasMoved = true;
         // Do nothing. Result isn't used directly
     }
 

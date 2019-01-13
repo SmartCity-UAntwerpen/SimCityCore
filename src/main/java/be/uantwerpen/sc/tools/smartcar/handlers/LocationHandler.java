@@ -139,9 +139,13 @@ public class LocationHandler
 
         for(Node node : map.getNodeList())
         {
-            if(node.getNodeId() == nodeID)
-                return node.getPointEntity().getTile().getRfid();
+            if(node.getNodeId() == nodeID) {
+                String rfid = node.getPointEntity().getTile().getRfid();
+                if(rfid == null || rfid.equals("")) logger.warn("Empty RFID returned for node "+nodeID);
+                return rfid;
+            }
         }
+        logger.warn("No RFID tag found for node "+nodeID);
         return null;
     }
 
