@@ -203,11 +203,16 @@ public class SimCore
                     System.err.println("Could not read input stream!");
                     e.printStackTrace();
 
-                    status = SimStatus.ERROR;
-                    process.destroy();
-                    running = false;
-                    return;
+                    logLine = null;
                 }
+            }
+
+            if(logLine == null) {
+                System.out.println("Simulation stopped unexpected");
+                status = SimStatus.ERROR;
+                process.destroy();
+                running = false;
+                return;
             }
 
             //Send shutdown signal to process
@@ -220,8 +225,13 @@ public class SimCore
                 writer.flush();
             } catch (IOException e) {
                 System.err.println("Could not send shutdown command. Force shutdown.");
+
+                running = false;
+                status = SimStatus.ERROR;
+
                 process.destroy();
                 e.printStackTrace();
+                return;
             }
 
             //Reset cached lines
