@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -37,10 +38,16 @@ public class MapServiceRest extends MapService {
         ResponseEntity<Map> responseMap;
         Map map;
 
-        responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
-        map = responseMap.getBody();
+        try {
+            responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
+            map = responseMap.getBody();
+            logger.info("Map loaded OK");
+        }
+        catch (ResourceAccessException e) {
+            logger.error("Error loading map from backend. Check connection and settings!");
+            throw e; // rethrow to stop application and print stacktrace
+        }
 
-        logger.info("Map loaded OK");
         return map;
     }
 }
