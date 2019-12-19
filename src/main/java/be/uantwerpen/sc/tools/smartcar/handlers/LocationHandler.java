@@ -2,7 +2,6 @@ package be.uantwerpen.sc.tools.smartcar.handlers;
 
 import be.uantwerpen.rc.models.map.Link;
 import be.uantwerpen.rc.models.map.Map;
-import be.uantwerpen.rc.models.map.Node;
 import be.uantwerpen.rc.models.map.Point;
 import be.uantwerpen.sc.configurations.SpringContext;
 import be.uantwerpen.sc.services.mapService.MapService;
@@ -70,12 +69,12 @@ public class LocationHandler
 
         //Find start node if existing
         boolean found = false;
-        Iterator<Node> it = map.getNodeList().iterator();
-        Node startNode = null;
+        Iterator<Point> it = map.getPointList().iterator();
+        Point startNode = null;
 
         while(it.hasNext() && ! found) {
-            Node node = it.next();
-            if(node.getNodeId() == startPosition) {
+            Point node = it.next();
+            if(node.getId() == startPosition) {
                 startNode = node;
                 found = true;
             }
@@ -85,9 +84,9 @@ public class LocationHandler
         if(found && startNode.getNeighbours().size() > 0)
         {
             this.destinationLocation = startNode.getNeighbours().get(0).getEndPoint();
-            this.destinationDistance = startNode.getNeighbours().get(0).getLength();
+            this.destinationDistance = startNode.getNeighbours().get(0).getCost().getLength();
 
-            this.currentLocation = startNode.getPointEntity();
+            this.currentLocation = startNode;
         }
         else {
             System.err.println("Could not find start position for id " + startPosition + "!");
@@ -137,10 +136,10 @@ public class LocationHandler
         if(map == null)
             return null; //No map loaded
 
-        for(Node node : map.getNodeList())
+        for(Point node : map.getPointList())
         {
-            if(node.getNodeId() == nodeID) {
-                String rfid = node.getPointEntity().getTile().getRfid();
+            if(node.getId() == nodeID) {
+                String rfid = node.getTile().getRfid();
                 if(rfid == null || rfid.equals("")) logger.warn("Empty RFID returned for node "+nodeID);
                 return rfid;
             }
@@ -173,7 +172,7 @@ public class LocationHandler
         if(map == null)
             return; //No map loaded
 
-        Node currentNode = findNodeByPointId(currentLocation.getId());
+        Point currentNode = findNodeByPointId(currentLocation.getId());
         if(currentNode == null) {
             logger.warn("Couldn't find node for point!");
             return;
@@ -196,10 +195,10 @@ public class LocationHandler
             return;
         }
 
-        logger.info("following link from "+futureLink.getStartPoint().getId()+" to "+futureLink.getEndPoint().getId()+" over distance "+futureLink.getLength());
+        logger.info("following link from "+futureLink.getStartPoint().getId()+" to "+futureLink.getEndPoint().getId()+" over distance "+futureLink.getCost().getLength());
 
         driving = true;
-        this.destinationDistance = futureLink.getLength();
+        this.destinationDistance = futureLink.getCost().getLength();
         this.destinationLocation = futureLink.getEndPoint();
         this.followline = true;
     }
@@ -212,7 +211,7 @@ public class LocationHandler
             return; // Ignore manual drive commands except for crossing or line following
         }
 
-        Node currentNode = findNodeByPointId(currentLocation.getId());
+        Point currentNode = findNodeByPointId(currentLocation.getId());
         if(currentNode == null) return;
 
         for(Link link: currentNode.getNeighbours()) {
@@ -220,7 +219,7 @@ public class LocationHandler
                 // Link angle is correct and we are at the start of it
                 // Theoretically, the robot could drive in the wrong direction. This is not implemented
                 destinationLocation = link.getEndPoint();
-                destinationDistance = link.getLength();
+                destinationDistance = link.getCost().getLength();
                 driving = true;
 
                 logger.info("Driving distance "+destinationDistance+" with angle "+angle+" to point "+destinationLocation.getId());
@@ -251,18 +250,17 @@ public class LocationHandler
 
     // search point by id
     private Point findPointById(long id) {
-        Node node =findNodeByPointId(id);
-        if(node != null) return node.getPointEntity();
+        Point node =findNodeByPointId(id);
+        if(node != null) return node;
         else return null;
     }
 
     // search node by it's contained point id
-    private Node findNodeByPointId(long pid) {
-        List<Node> nodes = map.getNodeList();
+    private Point findNodeByPointId(long pid) {
+        List<Point> nodes = map.getPointList();
 
-        for(Node node : nodes) {
-            Point point = node.getPointEntity();
-            long currentId = point.getId();
+        for(Point node : nodes) {
+            long currentId = node.getId();
             if(currentId == pid) return node;
         }
 
