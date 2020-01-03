@@ -25,7 +25,7 @@ public class MapServiceRest extends MapService {
     /**
      * Backend Port
      */
-    @Value("#{new Integer(${robotbackend.port})}")
+    @Value("#{new Integer(1994)}")
     private int robotBackendPort;
 
     /**
@@ -39,9 +39,12 @@ public class MapServiceRest extends MapService {
         Map map;
 
         try {
-            responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + String.valueOf(this.robotBackendPort) + "/map/", Map.class);
+            responseMap = template.getForEntity("http://" + this.robotBackendIP + ":" + this.robotBackendPort + "/map/", Map.class);
+            logger.info("map loaded?");
             map = responseMap.getBody();
             logger.info("Map loaded OK");
+            logger.info("Map received: " +map);
+            logger.info("Test sample from map: " +map.getPointList().get(0).getNeighbours().get(0).getStartPoint());
         }
         catch (ResourceAccessException e) {
             logger.error("Error loading map from backend. Check connection and settings!");

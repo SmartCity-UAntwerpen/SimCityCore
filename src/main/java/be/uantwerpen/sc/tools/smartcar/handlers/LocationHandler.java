@@ -22,7 +22,7 @@ public class LocationHandler
     protected static final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
 
     private Point currentLocation;
-    private Point destinationLocation;
+    private Long destinationLocation;
     protected double destinationDistance;
     protected boolean driving = false;
     protected boolean followline = false;
@@ -36,7 +36,7 @@ public class LocationHandler
     public LocationHandler()
     {
         this.currentLocation = null;
-        this.destinationLocation = null;
+        this.destinationLocation = 0L;
         this.destinationDistance = 0L;
         prevCommandBuffer = new ArrayList<>();
         rollbackLocation = null;
@@ -72,7 +72,7 @@ public class LocationHandler
         Iterator<Point> it = map.getPointList().iterator();
         Point startNode = null;
 
-        while(it.hasNext() && ! found) {
+        while(it.hasNext() && !found) {
             Point node = it.next();
             if(node.getId() == startPosition) {
                 startNode = node;
@@ -184,7 +184,7 @@ public class LocationHandler
         while(linkIt.hasNext() && futureLink == null) {
             Link link = linkIt.next();
 
-            if(link.getStartPoint().getId().equals(currentLocation.getId())) {
+            if(link.getStartPoint().equals(currentLocation.getId())) {
                 //Link has correct direction
                 futureLink = link;
             }
@@ -195,7 +195,7 @@ public class LocationHandler
             return;
         }
 
-        logger.info("following link from "+futureLink.getStartPoint().getId()+" to "+futureLink.getEndPoint().getId()+" over distance "+futureLink.getCost().getLength());
+        logger.info("following link from "+futureLink.getStartPoint()+" to "+futureLink.getEndPoint()+" over distance "+futureLink.getCost().getLength());
 
         driving = true;
         this.destinationDistance = futureLink.getCost().getLength();
@@ -215,14 +215,14 @@ public class LocationHandler
         if(currentNode == null) return;
 
         for(Link link: currentNode.getNeighbours()) {
-            if((link.getAngle() == angle) && (currentLocation.getId().equals(link.getStartPoint().getId()))) {
+            if((link.getAngle() == angle) && (currentLocation.getId().equals(link.getStartPoint()))) {
                 // Link angle is correct and we are at the start of it
                 // Theoretically, the robot could drive in the wrong direction. This is not implemented
                 destinationLocation = link.getEndPoint();
                 destinationDistance = link.getCost().getLength();
                 driving = true;
 
-                logger.info("Driving distance "+destinationDistance+" with angle "+angle+" to point "+destinationLocation.getId());
+                logger.info("Driving distance "+destinationDistance+" with angle "+angle+" to point "+destinationLocation);
                 return;
             }
         }
@@ -243,7 +243,7 @@ public class LocationHandler
     public void drivingDone() {
         logger.info("Driving command completed");
         driving = false;
-        this.currentLocation = this.destinationLocation;
+        this.currentLocation.setId(this.destinationLocation);
         this.destinationDistance = 0;
         this.followline = false;
     }

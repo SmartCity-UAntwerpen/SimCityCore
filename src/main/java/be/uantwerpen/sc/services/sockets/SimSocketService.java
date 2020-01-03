@@ -34,7 +34,7 @@ public class SimSocketService implements Runnable
         else
             this.socketPort = 0;   //Invalid listening port given
 
-        this.sockets = new ArrayList<SimSocket>();
+        this.sockets = new ArrayList<>();
         this.serverSocket = null;
     }
 
