@@ -42,18 +42,25 @@ public class SimCore
      */
     private Thread coreThread;
 
+    /**
+     * ID on the frontend of the core
+     */
+    private int coreID;
+
     private SimCore() {
         this.coreLocation = "";
         this.version = "0.0.0";
         this.status = SimStatus.OFF;
         this.running = false;
         this.coreThread = null;
+        this.coreID = 0;
     }
 
     public SimCore(String coreLocation, String version) {
         this();
         this.coreLocation = coreLocation;
         this.version = version;
+        this.coreID = 0;
     }
 
     public String getCoreLocation()
@@ -66,6 +73,18 @@ public class SimCore
     public SimStatus getStatus()
     {
         return this.status;
+    }
+
+    public int getCoreID() {
+        return coreID;
+    }
+
+    public void setCoreID(int coreID) {
+        this.coreID = coreID;
+    }
+
+    public void setStatus(SimStatus status) {
+        this.status = status;
     }
 
     /**
@@ -217,7 +236,10 @@ public class SimCore
 
             //Send shutdown signal to process
             status = SimStatus.SHUTDOWN;
-
+            //EDITED
+            while (status == SimStatus.SHUTDOWN){
+                //Wait for acknowledge from frontend
+            }
             System.out.println("Shutting down simulation");
             try {
                 // send exit command for clean shutdown

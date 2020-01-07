@@ -10,6 +10,7 @@ public enum SimStatus
     BOOT,
     RUNNING,
     ERROR,
-    SHUTDOWN
+    SHUTDOWN,
+    CONNECTION_ERROR
 }
 
