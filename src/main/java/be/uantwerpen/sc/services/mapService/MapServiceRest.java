@@ -44,7 +44,6 @@ public class MapServiceRest extends MapService {
             map = responseMap.getBody();
             logger.info("Map loaded OK");
             logger.info("Map received: " +map);
-            logger.info("Test sample from map: " +map.getPointList().get(0).getNeighbours().get(0).getStartPoint());
         }
         catch (ResourceAccessException e) {
             logger.error("Error loading map from backend. Check connection and settings!");

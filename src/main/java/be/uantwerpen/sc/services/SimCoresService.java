@@ -92,7 +92,6 @@ public class SimCoresService
                                     if(!locationTest.exists()) {
                                         //Core file can not be found in filesystem!
                                         System.err.println("JAR file: '" + locationTest.getAbsolutePath() + "' can not be found!");
-
                                         i++;
                                         continue;
                                     }

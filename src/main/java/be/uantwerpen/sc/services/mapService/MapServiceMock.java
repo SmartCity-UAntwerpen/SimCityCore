@@ -34,7 +34,7 @@ public class MapServiceMock extends MapService {
 
         Link link = new Link();
         link.getCost().setLength(10);
-        link.setStartPoint(point);
+        link.setStartPoint(point.getId());
         List<Link> neighbours = new ArrayList<>();
         neighbours.add(new Link());
 
