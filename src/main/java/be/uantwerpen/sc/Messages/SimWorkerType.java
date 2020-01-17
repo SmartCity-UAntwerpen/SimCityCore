@@ -1,5 +1,8 @@
 package be.uantwerpen.sc.Messages;
 
+/**
+ * Type of workers
+ */
 public enum SimWorkerType {
     car,
     f1,

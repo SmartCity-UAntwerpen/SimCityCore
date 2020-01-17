@@ -14,6 +14,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class defines how a session with the server is handeled using SOMP
+ */
 public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     private long workerID;
     private int botamount;
@@ -25,7 +28,7 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
         this.listener = listener;
     }
 
-    private void showHeaders(StompHeaders headers)
+    private void showHeaders(StompHeaders headers) //show the headers of a session
     {
         for (Map.Entry<String, List<String>> e:headers.entrySet()) {
             System.err.print("  " + e.getKey() + ": ");
@@ -39,43 +42,34 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
         }
     }
 
-    private void sendJsonMessage(StompSession session)
-    {
-         WorkerMessage msg= new WorkerMessage(workerID, SimWorkerType.car,status,botamount);
-        session.send("/SimCity/worker/Robot", msg);
-    }
-
-    private void subscribeTopic(String topic,StompSession session)
+    private void subscribeTopic(String topic,StompSession session) //subscribe to topics on the server
     {
         session.subscribe(topic, new StompFrameHandler() {
 
             @Override
-            public Type getPayloadType(StompHeaders headers) {
+            public Type getPayloadType(StompHeaders headers) {  //get the payload of the received messages
                 return ServerMessage.class;
             }
 
             @Override
-            public void handleFrame(StompHeaders headers,
+            public void handleFrame(StompHeaders headers,       //Handle a message
                                     Object payload)
             {
-                ServerMessage msg = (ServerMessage) payload;
-                listener.parseMessage(msg);
-                /*if(msg.getJob() == WorkerJob.CONNECTION){
-                    session.disconnect();
-                }*/
+                ServerMessage msg = (ServerMessage) payload;   //cast the payload to the correct class
+                listener.parseMessage(msg);                    //execute the action given in the message
             }
         });
     }
 
     @Override
-    public void afterConnected(StompSession session,
+    public void afterConnected(StompSession session,        //After a connection is made execute the follwowing commands
                                StompHeaders connectedHeaders)
     {
         System.err.println("Connected! Headers:");
         showHeaders(connectedHeaders);
 
-        subscribeTopic("/user/queue/worker", session);
-        subscribeTopic( "/topic/messages", session);
-        subscribeTopic("/topic/shutdown",session);
+        subscribeTopic("/user/queue/worker", session);//Subscribe to one on one communication
+        subscribeTopic( "/topic/messages", session);  //Actions to be executed
+        subscribeTopic("/topic/shutdown",session);    //Shutdown notification
     }
 }

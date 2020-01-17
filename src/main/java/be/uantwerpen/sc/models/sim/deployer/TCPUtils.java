@@ -11,6 +11,7 @@ import java.util.Arrays;
 /**
  * TODO
  */
+@Deprecated
 public class TCPUtils extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(TCPUtils.class);
 

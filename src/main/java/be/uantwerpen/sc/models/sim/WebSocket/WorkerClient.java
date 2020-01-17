@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * This class creates a client for the use of websockets. (It also keeps the program running)
+ */
 public class WorkerClient extends Thread {
     private String url;
     private long workerID;
@@ -37,21 +40,19 @@ public class WorkerClient extends Thread {
 
     public void run(){
 
-        WebSocketClient simpleWebSocketClient =
-                new StandardWebSocketClient();
+        WebSocketClient simpleWebSocketClient = new StandardWebSocketClient(); //Create websocketclient
         List<Transport> transports = new ArrayList<>(1);
         transports.add(new WebSocketTransport(simpleWebSocketClient));
-
         SockJsClient sockJsClient = new SockJsClient(transports);
-        WebSocketStompClient stompClient =
-                new WebSocketStompClient(sockJsClient);
-        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-        String url = this.url;
-        StompSessionHandler sessionHandler = new MyStompSessionHandler(workerID,this.listener);
+        WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient); //create client for stomp messages using sockjs
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter()); //Add converter for JSON to the client
+        String url = this.url; //Url to connect to
+        StompSessionHandler sessionHandler = new MyStompSessionHandler(workerID,this.listener); //create session handler
+        StompSession session = null;
         try{
-            StompSession session = stompClient.connect(url, sessionHandler).get();
-            WorkerMessage msg = new WorkerMessage(workerID, SimWorkerType.car,status,botAmount);
-            session.send("/SimCity/worker/Robot", msg);
+            session = stompClient.connect(url, sessionHandler).get();//Connect to server
+            WorkerMessage msg = new WorkerMessage(workerID, SimWorkerType.car,status,botAmount); //create connection message
+            session.send("/SimCity/worker/Robot", msg); //send the message
             while (!listener.setSession(session)); //give the session to the controller
         }catch (Exception e){
             System.err.println("error occured " + e);
@@ -59,14 +60,15 @@ public class WorkerClient extends Thread {
             e.printStackTrace();
         }
 
-        while (!exit){
+        while (!exit){ //when not shutdown
             try {
-                Thread.sleep(5000);
+                Thread.sleep(5000); //keep executing
             }catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
 
         }
+        session.disconnect();
     }
     //stop the program
     public void stopProgram(){
