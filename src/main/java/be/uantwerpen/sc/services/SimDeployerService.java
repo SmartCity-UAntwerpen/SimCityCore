@@ -7,8 +7,6 @@ import be.uantwerpen.sc.models.sim.SimCar;
 import be.uantwerpen.sc.models.sim.WebSocket.SocketCallback;
 import be.uantwerpen.sc.models.sim.WebSocket.WorkerClient;
 import be.uantwerpen.sc.models.sim.deployer.Log;
-import be.uantwerpen.sc.models.sim.deployer.TCPListener;
-import be.uantwerpen.sc.models.sim.deployer.TCPUtils;
 //import com.sun.xml.internal.bind.v2.TODO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ import java.util.logging.Level;
  * Converts incoming TCP packets into commands for the vehicle
  */
 @Service
-//to use TCP again implement: TCPListener,
 public class SimDeployerService implements  SocketCallback {
 
     private static final Logger logger = LoggerFactory.getLogger(SimDeployerService.class);
@@ -49,10 +46,7 @@ public class SimDeployerService implements  SocketCallback {
      */
     private Level level = Level.CONFIG;
 
-    /**
-     * TODO
-     */
-    //private TCPUtils tcpUtils;
+
     private WorkerClient workerClient;
     /**
      * Map of all the simulated vehicles and their simulation identifiers
@@ -79,19 +73,10 @@ public class SimDeployerService implements  SocketCallback {
     }
 
     /**
-     * Start sequence, attempts to start TCPUtils and thus tries to open sockets
+     * Start sequence, attempts to start WorkerClient and thus tries to open sockets
      */
     public void start() {
         log = new Log(this.getClass(), level);
-        //Old TCP Code changed to websockets
-        /*try {
-            tcpUtils = new TCPUtils(simPort, this,true);
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.error("SimDeployer could not be started. TCP IO-exception.");
-            //Log.logSevere("SIMDEPLOYER", "SimDeployer could not be started. TCP IO-exception.");
-        }
-        tcpUtils.start();*/
 
         //To implement in docker toolbox: use ws://192.168.99.1:1394/worker before generating jar
         //To implement locally:
@@ -102,43 +87,6 @@ public class SimDeployerService implements  SocketCallback {
         logger.info("SimDeployer has been started.");
         //Log.logInfo("SIMDEPLOYER", "SimDeployer has been started.");
     }
-
-    /*
-     * Parses incoming TCP message into the corresponding vehicle command
-     * @param message Message received
-     * @return "ACK" or "NACK", to be parsed by the other server
-     * @throws IOException
-     */
-    //OLD TCP CODE
-    /*@Override
-    public String parseTCP(String message) throws IOException {
-        boolean result = false;
-        if (message.matches("create\\s[0-9]+")) {
-            result = createVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
-        } else if (message.matches("run\\s[0-9]+")) {
-            result = startupVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
-        } else if (message.matches("ping")) {
-            return "PONG";
-        } else if (message.matches("stop\\s[0-9]+")) {
-            result = stopVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
-        } else if (message.matches("kill\\s[0-9]+")) {
-            result = killVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
-        } else if (message.matches("restart\\s[0-9]+")) {
-            result = restartVehicle(Long.parseLong(message.replaceAll("\\D+", "")));
-        } else if (message.matches("set\\s[0-9]+\\s\\w+\\s\\w+")) {
-            String[] splitString = message.split("\\s+");
-            Long simulationID = Long.parseLong(splitString[1]);
-            String parameter = splitString[2];
-            String argument = splitString[3];
-            result = setVehicle(simulationID,parameter,argument);
-        }
-        if(result){
-            return "ACK";
-        }
-        else{
-            return "NACK";
-        }
-    }*/
 
     @Override
     public boolean setSession(StompSession session) {
