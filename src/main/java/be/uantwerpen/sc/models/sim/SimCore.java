@@ -134,9 +134,11 @@ public class SimCore
 
             //Add core boot arguments
             List<String> processCommands = processBuilder.command();
+            //System.out.println("Classpath: " + System.getProperty("java.class.path"));
             processCommands.addAll(runArguments);
             processCommands.add("-jar");
             processCommands.add(coreLocation);
+            processBuilder.redirectErrorStream(true);
             processBuilder.command(processCommands);
 
             //Uncomment these lines to test with core in IDE
@@ -148,6 +150,7 @@ public class SimCore
             Process process;
             try {
                 process = processBuilder.start();
+
             }
             catch(Exception e)
             {
@@ -174,7 +177,6 @@ public class SimCore
             {
                 try {
                     logLine = readLine(reader);
-
                     if(logLine == null)
                         break; //Input stream closed, exit boot status
 

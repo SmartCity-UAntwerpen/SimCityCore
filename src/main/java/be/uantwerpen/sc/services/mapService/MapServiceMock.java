@@ -33,21 +33,19 @@ public class MapServiceMock extends MapService {
         point.setId(1L);
 
         Link link = new Link();
-        link.setLength(10);
-        link.setStartPoint(point);
+        link.getCost().setLength(10);
+        link.setStartPoint(point.getId());
         List<Link> neighbours = new ArrayList<>();
         neighbours.add(new Link());
 
-        Node node = new Node();
-        node.setPointEntity(point);
-        node.setNodeId(10L);
-        node.setNeighbours(neighbours);
+        point.setId(10L);
+        point.setNeighbours(neighbours);
 
-        List<Node> nodeList = new ArrayList<>();
-        nodeList.add(node);
+        List<Point> nodeList = new ArrayList<>();
+        nodeList.add(point);
 
         Map map = new Map();
-        map.setNodeList(nodeList);
+        map.setPointList(nodeList);
 
         return map;
     }
