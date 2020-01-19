@@ -141,9 +141,13 @@ public class SimDeployerService implements  SocketCallback {
                 System.err.println("Problem Occured " + message.getJob());
             }
             if(result && message.getJob() != WorkerJob.CONNECTION){//answer if execution of command was successful
+                logger.info("message receiveid: Worker " + message.getWorkerID() + " job: " + message.getJob() + " botID: " + message.getBotID() + " status: ACK");
+                logger.warn("message receiveid: Worker " + message.getWorkerID() + " job: " + message.getJob() + " botID: " + message.getBotID() + " status: ACK");
                 System.out.println("Ack");
                 session.send("/SimCity/Robot/topic/answers",new ServerMessage(this.ID,message.getJob(),message.getBotID(),"OK"));
             }else if (!result && message.getWorkerID() == this.ID && message.getJob() != WorkerJob.CONNECTION){
+                logger.info("message receiveid: Worker " + message.getWorkerID() + " job: " + message.getJob() + " botID: " + message.getBotID() + " status: NACK");
+                logger.warn("message receiveid: Worker " + message.getWorkerID() + " job: " + message.getJob() + " botID: " + message.getBotID() + " status: NACK");
                 session.send("/SimCity/Robot/topic/answers",new ServerMessage(this.ID,message.getJob(),message.getBotID(),"NOK"));
             }
         }
