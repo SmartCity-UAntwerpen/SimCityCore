@@ -25,7 +25,7 @@ public class MapServiceRest extends MapService {
     /**
      * Backend Port
      */
-    @Value("#{new Integer(1994)}")
+    @Value("${robotbackend.port}")
     private int robotBackendPort;
 
     /**

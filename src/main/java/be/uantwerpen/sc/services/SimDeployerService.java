@@ -80,9 +80,9 @@ public class SimDeployerService implements  SocketCallback {
 
         //To implement in docker toolbox: use ws://192.168.99.1:1394/worker before generating jar
         //To implement locally:
-        workerClient = new WorkerClient("ws://localhost:1394/worker",this,0,0,simulatedVehicles.size());
+        //workerClient = new WorkerClient("ws://localhost:1394/worker",this,0,0,simulatedVehicles.size());
         //To implement on server docker:
-        //workerClient = new WorkerClient("ws://172.10.0.4:8080/worker",this,0,0,simulatedVehicles.size());
+        workerClient = new WorkerClient("ws://172.10.0.4:8080/worker",this,0,0,simulatedVehicles.size());
         workerClient.start();
         logger.info("SimDeployer has been started.");
         //Log.logInfo("SIMDEPLOYER", "SimDeployer has been started.");
