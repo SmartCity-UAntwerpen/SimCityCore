@@ -1,0 +1,18 @@
+#This file explains which files are needed inside the directory of the Dockerfile when building an image for the robot
+
+Files needed:
+
+RobotCityDeployer.jar (aanmaken mbv package van maven RobotSim)
+RobotCoreDeployer.jar (aanmaken mbv package van maven RobotCore)
+BotCoreConfig.xml
+
+build image : docker build -t NAME .
+build robot worker : docker run -P --name RobotSim -it robot_image
+build FullServer worker : docker run -P --name RobotSim -it robot_fullserver
+build Independant worker : docker run -P --name RobotSim -it robot_independent
+
+Used server: 172.10.0.10
+Hier zijn in de rootfolder ook de gebruikt directories voor het builden van de images te vinden.
+
+Voor lokaal gebruik met docker toolbox verander de url in dronesimulator naar deze van je computer op het virtual box
+netwerk. Ex.  ws = websocket.create_connection("ws://192.168.99.1:1394/droneworker")
